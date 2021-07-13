@@ -5,11 +5,12 @@ function errorHandler(err, _req, res, next) {
   if (err instanceof CustomError) {
     res.status(err.code).send({
       type: err.type,
+      message: err.message,
     })
   } else {
     console.log(err)
     res.status(500).send({
-      type: 'unknown-error',
+      type: 'UnknownError',
     })
   }
 }
