@@ -3,6 +3,7 @@ const router = express.Router()
 const models = require('./db/models')
 const CustomError = require('./CustomError')
 const { UniqueConstraintError } = require('sequelize')
+const { getById, updateById } = require('./db/service-helper.js')
 
 const postEagerConfig = {
   include: [
@@ -22,24 +23,17 @@ const userEagerConfig = {
   ],
 }
 
-const NotFoundError = new CustomError(
-  'NotFound',
-  404,
-  "This entry doesn't exits"
-)
-
-const getById = async (model, id, eagerConf = null) => {
-  let data
-  if (eagerConf !== null) {
-    data = await model.findByPk(id, eagerConf)
-  } else {
-    data = await model.findByPk(id)
-  }
-  if (data == null) throw NotFoundError
-  return data
-}
-
 router
+  /*
+   ** === POSTS ===
+   */
+
+  .post('/posts', (req, res, next) => {
+    models.Post.create(req.body)
+      .then((post) => res.status(201).send(post))
+      .catch(next)
+  })
+
   .get('/posts', (_req, res, next) => {
     models.Post.findAll(postEagerConfig)
       .then((posts) => res.status(200).send(posts))
@@ -52,9 +46,34 @@ router
       .catch(next)
   })
 
-  .post('/posts', (req, res, next) => {
-    models.Post.create(req.body)
-      .then((post) => res.status(201).send(post))
+  .patch('/posts/:id', (req, res, next) => {
+    updateById(models.Post, req.params.id, req.body, postEagerConfig)
+      .then((post) => res.status(200).send(post))
+      .catch(next)
+  })
+
+  /*
+   ** === USERS ===
+   */
+
+  .post('/users', (req, res, next) => {
+    const createUser = async (data) => {
+      try {
+        const user = await models.User.create(data)
+        return user
+      } catch (e) {
+        if (e instanceof UniqueConstraintError) {
+          e = new CustomError(
+            'DuplicateUser',
+            403,
+            'This username is already taken'
+          )
+        }
+        throw e
+      }
+    }
+    createUser(req.body)
+      .then((user) => res.status(201).send(user))
       .catch(next)
   })
 
@@ -70,25 +89,9 @@ router
       .catch(next)
   })
 
-  .post('/users', (req, res, next) => {
-    const createUser = async (data) => {
-      try {
-        const user = await models.User.create(data)
-        return user
-      } catch (e) {
-        if (e instanceof UniqueConstraintError) {
-          throw new CustomError(
-            'DuplicateUser',
-            403,
-            'This username is already taken'
-          )
-        } else {
-          throw e
-        }
-      }
-    }
-    createUser(req.body)
-      .then((user) => res.status(201).send(user))
+  .patch('/users/:id', (req, res, next) => {
+    updateById(models.User, req.params.id, req.body, userEagerConfig)
+      .then((user) => res.status(200).send(user))
       .catch(next)
   })
 

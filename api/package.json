@@ -5,9 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon --ignore 'tests/*' index.js",
     "lint": "yarn run eslint \"**/*.js\" --quiet",
-    "prettier": "yarn prettier --write ."
+    "prettier": "yarn prettier --write .",
+    "db:clear": "yarn sequelize-cli db:migrate:undo:all && yarn sequelize-cli db:migrate",
+    "db:reset": "yarn db:clear && yarn sequelize-cli db:seed:all",
+    "test:prepare": "NODE_ENV=test yarn db:clear",
+    "test:run": "NODE_ENV=test yarn jest",
+    "test": "yarn test:prepare && yarn test:run"
   },
   "keywords": [],
   "author": "",
@@ -20,8 +25,17 @@
   },
   "devDependencies": {
     "eslint": "^7.30.0",
+    "factory-girl": "^5.0.4",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.12",
     "prettier": "2.3.2",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "supertest": "^6.1.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
