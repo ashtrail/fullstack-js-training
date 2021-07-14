@@ -58,6 +58,18 @@ describe('API E2E Tests', () => {
       expect(res.body.posts.length).toEqual(3)
     })
 
+    it('should get username availability', async () => {
+      await factory.create('user', { name: 'Bob' })
+      let res = await request(app)
+        .get(`/users/available`)
+        .query({ name: 'Bob' })
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.available).toEqual(false)
+      res = await request(app).get(`/users/available`).query({ name: 'Steve' })
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.available).toEqual(true)
+    })
+
     it('should update a user', async () => {
       const user = await factory.create('user', { name: 'Bob' })
       const res = await request(app)

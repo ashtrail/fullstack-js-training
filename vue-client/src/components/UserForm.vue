@@ -7,13 +7,25 @@
           class="input"
           type="text"
           placeholder="John Doe"
-          v-model="user.name"
+          v-model="username"
         />
       </div>
+      <p v-if="nameIsNotEmpty && usernameAvailable" class="help is-success">
+        This username is available
+      </p>
+      <p v-if="nameIsNotEmpty && !usernameAvailable" class="help is-danger">
+        This username is not available
+      </p>
     </div>
 
     <div class="buttons">
-      <button type="submit" class="button is-primary">{{ submitText }}</button>
+      <button
+        type="submit"
+        class="button is-primary"
+        :disabled="!canSubmit ? '' : false"
+      >
+        {{ submitText }}
+      </button>
       <button
         v-if="inEditMode"
         class="button is-danger is-outlined"
@@ -26,6 +38,8 @@
 </template>
 
 <script>
+import http from '../http-common'
+
 export default {
   name: 'user-form',
   props: {
@@ -38,6 +52,7 @@ export default {
   data() {
     return {
       edit: false,
+      usernameAvailable: true,
       user: {
         id: null,
         name: '',
@@ -65,11 +80,34 @@ export default {
     submitText() {
       return this.inCreationMode ? 'Create' : 'Edit'
     },
+
+    nameIsNotEmpty() {
+      return this.user.name != ''
+    },
+
+    canSubmit() {
+      return this.nameIsNotEmpty && this.usernameAvailable
+    },
+
+    username: {
+      get() {
+        return this.user.name
+      },
+
+      set(value) {
+        this.user.name = value
+        http
+          .get('/users/available', { params: { name: value } })
+          .then(({ data }) => {
+            this.usernameAvailable = data.available
+          })
+      },
+    },
   },
 
   methods: {
     onSubmit() {
-      if (this.user.name != '') {
+      if (this.canSubmit) {
         this.$emit('submit:user', this.user)
         this.clearForm()
         this.close()

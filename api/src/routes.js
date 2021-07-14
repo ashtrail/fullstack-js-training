@@ -98,6 +98,15 @@ router
       .catch(next)
   })
 
+  .get('/users/available', (req, res, next) => {
+    models.User.findOne({ where: { name: req.query.name } })
+      .then((user) => {
+        const available = user === null
+        res.status(200).send({ available })
+      })
+      .catch(next)
+  })
+
   .get('/users/:id', (req, res, next) => {
     getById(models.User, req.params.id, userEagerConfig)
       .then((user) => res.status(200).send(user))
