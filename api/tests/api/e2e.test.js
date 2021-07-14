@@ -12,6 +12,9 @@ describe('API E2E Tests', () => {
     await db.sequelize.sync({ force: true })
   })
 
+  /*
+   * User routes integration tests
+   */
   describe('Users', () => {
     it('should create new user', async () => {
       const res = await request(app).post('/users').send({ name: 'Bob' })
@@ -47,12 +50,6 @@ describe('API E2E Tests', () => {
       expect(res.body.name).toEqual(user.name)
     })
 
-    it("should throw NotFound if user doesn't exist", async () => {
-      const res = await request(app).get('/users/1')
-      expect(res.statusCode).toEqual(404)
-      expect(res.body.type).toEqual('NotFound')
-    })
-
     it("should get user's posts", async () => {
       const user = await factory.create('user')
       await factory.createMany('post', 3, { userId: user.id })
@@ -69,7 +66,29 @@ describe('API E2E Tests', () => {
       expect(res.statusCode).toEqual(200)
       expect(res.body.name).toEqual('Steve')
     })
+
+    it('should delete a user', async () => {
+      const user = await factory.create('user')
+      const res = await request(app).del(`/users/${user.id}`)
+      expect(res.statusCode).toEqual(204)
+      const query = await db.User.findByPk(user.id)
+      expect(query).toEqual(null)
+    })
+
+    it("should throw NotFound if user doesn't exist", async () => {
+      let res = await request(app).get('/users/1')
+      expect(res.statusCode).toEqual(404)
+      expect(res.body.type).toEqual('NotFound')
+      res = await request(app).patch('/users/1').send({ name: 'Updated name' })
+      expect(res.statusCode).toEqual(404)
+      res = await request(app).del('/users/1')
+      expect(res.statusCode).toEqual(404)
+    })
   })
+
+  /*
+   * Post routes integration tests
+   */
 
   describe('Posts', () => {
     it('should create new post', async () => {
@@ -95,12 +114,6 @@ describe('API E2E Tests', () => {
       expect(res.body.author.name).toEqual(user.name)
     })
 
-    it("should throw NotFound if post doesn't exist", async () => {
-      const res = await request(app).get('/posts/1')
-      expect(res.statusCode).toEqual(404)
-      expect(res.body.type).toEqual('NotFound')
-    })
-
     it('should update a post', async () => {
       const post = await factory.create('post', { title: 'My Title' })
       const res = await request(app).patch(`/posts/${post.id}`).send({
@@ -108,6 +121,26 @@ describe('API E2E Tests', () => {
       })
       expect(res.statusCode).toEqual(200)
       expect(res.body.title).toEqual('Updated Title')
+    })
+
+    it('should delete a post', async () => {
+      const post = await factory.create('post')
+      const res = await request(app).del(`/posts/${post.id}`)
+      expect(res.statusCode).toEqual(204)
+      const query = await db.Post.findByPk(post.id)
+      expect(query).toEqual(null)
+    })
+
+    it("should throw NotFound if post doesn't exist", async () => {
+      let res = await request(app).get('/posts/1')
+      expect(res.statusCode).toEqual(404)
+      expect(res.body.type).toEqual('NotFound')
+      res = await request(app)
+        .patch('/posts/1')
+        .send({ title: 'Updated Title' })
+      expect(res.statusCode).toEqual(404)
+      res = await request(app).del('/posts/1')
+      expect(res.statusCode).toEqual(404)
     })
   })
 

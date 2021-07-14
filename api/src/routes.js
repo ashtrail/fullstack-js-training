@@ -4,6 +4,7 @@ const models = require('./db/models')
 const CustomError = require('./CustomError')
 const { UniqueConstraintError } = require('sequelize')
 const { getById, updateById } = require('./db/service-helper.js')
+const { NotFoundError } = require('./errors')
 
 const postEagerConfig = {
   include: [
@@ -52,6 +53,20 @@ router
       .catch(next)
   })
 
+  .delete('/posts/:id', (req, res, next) => {
+    models.Post.destroy({
+      where: { id: req.params.id },
+    })
+      .then((deleted) => {
+        if (deleted) {
+          res.status(204).send({})
+        } else {
+          next(NotFoundError)
+        }
+      })
+      .catch(next)
+  })
+
   /*
    ** === USERS ===
    */
@@ -92,6 +107,20 @@ router
   .patch('/users/:id', (req, res, next) => {
     updateById(models.User, req.params.id, req.body, userEagerConfig)
       .then((user) => res.status(200).send(user))
+      .catch(next)
+  })
+
+  .delete('/users/:id', (req, res, next) => {
+    models.User.destroy({
+      where: { id: req.params.id },
+    })
+      .then((deleted) => {
+        if (deleted) {
+          res.status(204).send({})
+        } else {
+          next(NotFoundError)
+        }
+      })
       .catch(next)
   })
 
