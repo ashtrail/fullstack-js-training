@@ -50,14 +50,6 @@ describe('API E2E Tests', () => {
       expect(res.body.name).toEqual(user.name)
     })
 
-    it("should get user's posts", async () => {
-      const user = await factory.create('user')
-      await factory.createMany('post', 3, { userId: user.id })
-      const res = await request(app).get(`/users/${user.id}`)
-      expect(res.statusCode).toEqual(200)
-      expect(res.body.posts.length).toEqual(3)
-    })
-
     it('should get username availability', async () => {
       await factory.create('user', { name: 'Bob' })
       let res = await request(app)
@@ -87,12 +79,39 @@ describe('API E2E Tests', () => {
       expect(query).toEqual(null)
     })
 
+    it("should get user's posts on GET, CREATE & UPDATE", async () => {
+      const user = await factory.create('user')
+      await factory.createMany('post', 3, { userId: user.id })
+
+      // Get
+      let res = await request(app).get(`/users/${user.id}`)
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.posts.length).toEqual(3)
+
+      // Update
+      res = await request(app).patch(`/users/${user.id}`).send({ name: 'Bob' })
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.posts.length).toEqual(3)
+
+      // Create
+      res = await request(app)
+        .post('/users')
+        .send(await factory.attrs('user'))
+      expect(res.statusCode).toEqual(201)
+      expect(res.body.posts).toEqual([])
+    })
+
     it("should throw NotFound if user doesn't exist", async () => {
+      // Get
       let res = await request(app).get('/users/1')
       expect(res.statusCode).toEqual(404)
       expect(res.body.type).toEqual('NotFound')
+
+      // Update
       res = await request(app).patch('/users/1').send({ name: 'Updated name' })
       expect(res.statusCode).toEqual(404)
+
+      // Delete
       res = await request(app).del('/users/1')
       expect(res.statusCode).toEqual(404)
     })
@@ -118,12 +137,10 @@ describe('API E2E Tests', () => {
     })
 
     it('should get one post', async () => {
-      const user = await factory.create('user')
-      const post = await factory.create('post', { userId: user.id })
+      const post = await factory.create('post')
       const res = await request(app).get(`/posts/${post.id}`)
       expect(res.statusCode).toEqual(200)
       expect(res.body.title).toEqual(post.title)
-      expect(res.body.author.name).toEqual(user.name)
     })
 
     it('should update a post', async () => {
@@ -143,14 +160,43 @@ describe('API E2E Tests', () => {
       expect(query).toEqual(null)
     })
 
+    it('should get post author on GET, CREATE & UPDATE', async () => {
+      const user = await factory.create('user')
+      const post = await factory.create('post', { userId: user.id })
+
+      // Get
+      let res = await request(app).get(`/posts/${post.id}`)
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.author.name).toEqual(user.name)
+
+      // Update
+      res = await request(app)
+        .patch(`/posts/${post.id}`)
+        .send({ title: 'Updated' })
+      expect(res.statusCode).toEqual(200)
+      expect(res.body.author.name).toEqual(user.name)
+
+      // Create
+      res = await request(app)
+        .post('/posts')
+        .send(await factory.attrs('post', { userId: user.id }))
+      expect(res.statusCode).toEqual(201)
+      expect(res.body.author.name).toEqual(user.name)
+    })
+
     it("should throw NotFound if post doesn't exist", async () => {
+      // Get
       let res = await request(app).get('/posts/1')
       expect(res.statusCode).toEqual(404)
       expect(res.body.type).toEqual('NotFound')
+
+      // Update
       res = await request(app)
         .patch('/posts/1')
         .send({ title: 'Updated Title' })
       expect(res.statusCode).toEqual(404)
+
+      // Delete
       res = await request(app).del('/posts/1')
       expect(res.statusCode).toEqual(404)
     })

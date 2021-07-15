@@ -1,136 +1,21 @@
 const express = require('express')
 const router = express.Router()
-const models = require('./db/models')
-const CustomError = require('./CustomError')
-const { UniqueConstraintError } = require('sequelize')
-const { getById, updateById } = require('./db/service-helper.js')
-const { NotFoundError } = require('./errors')
-
-const postEagerConfig = {
-  include: [
-    {
-      model: models.User,
-      as: 'author',
-    },
-  ],
-}
-
-const userEagerConfig = {
-  include: [
-    {
-      model: models.Post,
-      as: 'posts',
-    },
-  ],
-}
+const { postController, userController } = require('./controllers')
 
 router
-  /*
-   ** === POSTS ===
-   */
+  // Posts
+  .post('/posts', postController.post)
+  .get('/posts', postController.getAll)
+  .get('/posts/:id', postController.getOne)
+  .patch('/posts/:id', postController.patch)
+  .delete('/posts/:id', postController.delete)
 
-  .post('/posts', (req, res, next) => {
-    models.Post.create(req.body)
-      .then((post) => res.status(201).send(post))
-      .catch(next)
-  })
-
-  .get('/posts', (_req, res, next) => {
-    models.Post.findAll(postEagerConfig)
-      .then((posts) => res.status(200).send(posts))
-      .catch(next)
-  })
-
-  .get('/posts/:id', (req, res, next) => {
-    getById(models.Post, req.params.id, postEagerConfig)
-      .then((post) => res.status(200).send(post))
-      .catch(next)
-  })
-
-  .patch('/posts/:id', (req, res, next) => {
-    updateById(models.Post, req.params.id, req.body, postEagerConfig)
-      .then((post) => res.status(200).send(post))
-      .catch(next)
-  })
-
-  .delete('/posts/:id', (req, res, next) => {
-    models.Post.destroy({
-      where: { id: req.params.id },
-    })
-      .then((deleted) => {
-        if (deleted) {
-          res.status(204).send({})
-        } else {
-          next(NotFoundError)
-        }
-      })
-      .catch(next)
-  })
-
-  /*
-   ** === USERS ===
-   */
-
-  .post('/users', (req, res, next) => {
-    const createUser = async (data) => {
-      try {
-        const user = await models.User.create(data)
-        return user
-      } catch (e) {
-        if (e instanceof UniqueConstraintError) {
-          e = new CustomError(
-            'DuplicateUser',
-            403,
-            'This username is already taken'
-          )
-        }
-        throw e
-      }
-    }
-    createUser(req.body)
-      .then((user) => res.status(201).send(user))
-      .catch(next)
-  })
-
-  .get('/users', (_req, res, next) => {
-    models.User.findAll(userEagerConfig)
-      .then((users) => res.status(200).send(users))
-      .catch(next)
-  })
-
-  .get('/users/available', (req, res, next) => {
-    models.User.findOne({ where: { name: req.query.name } })
-      .then((user) => {
-        const available = user === null
-        res.status(200).send({ available })
-      })
-      .catch(next)
-  })
-
-  .get('/users/:id', (req, res, next) => {
-    getById(models.User, req.params.id, userEagerConfig)
-      .then((user) => res.status(200).send(user))
-      .catch(next)
-  })
-
-  .patch('/users/:id', (req, res, next) => {
-    updateById(models.User, req.params.id, req.body, userEagerConfig)
-      .then((user) => res.status(200).send(user))
-      .catch(next)
-  })
-
-  .delete('/users/:id', (req, res, next) => {
-    models.User.destroy({
-      where: { id: req.params.id },
-    })
-      .then((deleted) => {
-        if (deleted) {
-          res.status(204).send({})
-        } else {
-          next(NotFoundError)
-        }
-      })
-      .catch(next)
-  })
+  // Users
+  .post('/users', userController.post)
+  .get('/users', userController.getAll)
+  .get('/users/available', userController.getAvailability)
+  .get('/users/:id', userController.getOne)
+  .patch('/users/:id', userController.patch)
+  .delete('/users/:id', userController.delete)
 
 module.exports = router
