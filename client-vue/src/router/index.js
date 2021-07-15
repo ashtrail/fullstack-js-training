@@ -33,7 +33,9 @@ const routes = [
   },
   {
     path: '/users/:id',
-    component: import('../views/User.vue'),
+    component: function () {
+      return import('../views/User.vue')
+    },
   },
   {
     path: '/authors',

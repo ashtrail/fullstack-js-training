@@ -10,10 +10,13 @@
           v-model="username"
         />
       </div>
-      <p v-if="nameIsNotEmpty && usernameAvailable" class="help is-success">
+      <p v-if="inputAvailable" class="help is-success">
         This username is available
       </p>
-      <p v-if="nameIsNotEmpty && !usernameAvailable" class="help is-danger">
+      <p v-else-if="inputIsCurrentUsername" class="help is-danger">
+        This is the current username
+      </p>
+      <p v-else-if="inputNotAvailable" class="help is-danger">
         This username is not available
       </p>
     </div>
@@ -63,7 +66,7 @@ export default {
 
   created() {
     if (!this.populateWith.empty) {
-      this.user = this.populateWith
+      this.user = { ...this.populateWith }
       this.edit = true
     }
   },
@@ -89,6 +92,22 @@ export default {
       return this.nameIsNotEmpty && this.usernameAvailable
     },
 
+    inputAvailable() {
+      return this.nameIsNotEmpty && this.usernameAvailable
+    },
+
+    inputNotAvailable() {
+      return this.nameIsNotEmpty && !this.usernameAvailable
+    },
+
+    inputIsCurrentUsername() {
+      return (
+        this.nameIsNotEmpty &&
+        !this.usernameAvailable &&
+        this.user.name == this.populateWith.name
+      )
+    },
+
     username: {
       get() {
         return this.user.name
@@ -109,6 +128,7 @@ export default {
     onSubmit() {
       if (this.canSubmit) {
         this.$emit('submit:user', this.user)
+        console.log('emit submit one user')
         this.clearForm()
         this.close()
       }

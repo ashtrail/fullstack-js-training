@@ -17,33 +17,40 @@ export default createStore({
       state.users = payload
     },
 
-    addUser(state, { edit, user }) {
-      if (edit) {
-        // remove old version of user if it already exist
-        state.users = state.users.filter((u) => u.id != user.id)
+    addOrReplaceOneUser(state, payload) {
+      const idx = state.users.findIndex((u) => u.id == payload.id)
+      if (idx != -1) {
+        state.users[idx] = payload
+      } else {
+        state.users.push(payload)
       }
-      // add new version to the list of posts
-      state.users.push(user)
+    },
+
+    deleteUser(state, id) {
+      state.users = state.users.filter((u) => u.id != id)
     },
 
     setAllPosts(state, payload) {
       state.posts = payload
     },
 
-    addPost(state, { edit, post }) {
-      if (edit) {
-        // remove old version of post if it already exist
-        state.posts = state.posts.filter((p) => p.id != post.id)
+    addOrReplaceOnePost(state, payload) {
+      const idx = state.posts.findIndex((p) => p.id == payload.id)
+      if (idx != -1) {
+        state.posts[idx] = payload
+      } else {
+        state.posts.push(payload)
       }
-      // add new version to the list of posts
-      state.posts.push(post)
+    },
+
+    deletePost(state, id) {
+      state.posts = state.posts.filter((p) => p.id != id)
     },
   },
   actions: {
     async createUser({ commit }, { name }) {
       return http.post('/users', { name }).then(({ data }) => {
-        console.log('res body =', data)
-        commit('addUser', { edit: false, user: data })
+        commit('addOrReplaceOneUser', data)
       })
     },
 
@@ -53,22 +60,62 @@ export default createStore({
       })
     },
 
-    async createPost({ commit }, { author, title, body }) {
+    async fetchOneUser({ commit }, id) {
+      return http.get(`/users/${id}`).then(({ data }) => {
+        commit('addOrReplaceOneUser', data)
+      })
+    },
+
+    async editUser({ commit }, { id, name }) {
+      return http.patch(`/users/${id}`, { name }).then(({ data }) => {
+        commit('addOrReplaceOneUser', data)
+      })
+    },
+
+    async deleteUser({ commit, dispatch }, id) {
+      await http.delete(`/users/${id}`)
+      commit('deleteUser', id)
+      // update posts, some might have been deleted in cascade
+      await dispatch('fetchAllPosts')
+    },
+
+    async createPost({ commit }, { userId, title, content }) {
       const post = {
-        author,
+        userId,
         title,
-        body,
+        content,
       }
       return http.post('/posts', post).then(({ data }) => {
         console.log('res body =', data)
-        commit('addPost', { edit: false, post: data })
+        commit('addOrReplaceOnePost', data)
       })
     },
 
     async fetchAllPosts(state) {
       return http.get('/posts').then(({ data }) => {
+        console.log('fetch All Posts dispatch = ', data)
         state.commit('setAllPosts', data)
       })
+    },
+
+    async fetchOnePost({ commit }, id) {
+      return http.get(`/posts/${id}`).then(({ data }) => {
+        console.log('fetch One Posts dispatch = ', data)
+        commit('addOrReplaceOnePost', data)
+      })
+    },
+
+    async editPost({ commit }, { id, title, content }) {
+      return http.patch(`/posts/${id}`, { title, content }).then(({ data }) => {
+        commit('addOrReplaceOnePost', data)
+      })
+    },
+
+    async deletePost({ commit, dispatch }, { id, userId }) {
+      await http.delete(`/posts/${id}`)
+      commit('deletePost', id)
+      // update author so his posts are up to date
+      await dispatch('fetchOneUser', userId)
     },
   },
   modules: {},

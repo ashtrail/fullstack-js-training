@@ -41,7 +41,7 @@ export default {
 
   computed: {
     posts() {
-      return this.$store.state.posts
+      return this.$store.state.posts || []
     },
   },
 

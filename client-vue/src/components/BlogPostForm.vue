@@ -17,17 +17,17 @@
     </div>
 
     <div class="field">
-      <label class="label">Body</label>
+      <label class="label">Content</label>
       <div class="control">
         <textarea
           class="textarea"
-          :class="{ 'is-danger': submitting && invalidBody }"
+          :class="{ 'is-danger': submitting && invalidContent }"
           placeholder="Post Content"
-          v-model="post.body"
+          v-model="post.content"
         ></textarea>
       </div>
-      <p v-if="submitting && invalidBody" class="help is-danger">
-        Body cannot be empty
+      <p v-if="submitting && invalidContent" class="help is-danger">
+        Content cannot be empty
       </p>
     </div>
 
@@ -74,17 +74,17 @@ export default {
       error: false,
       success: false,
       post: {
-        author: null,
+        userId: null,
         id: null,
         title: '',
-        body: '',
+        content: '',
       },
     }
   },
 
   created() {
     if (!this.populateWith.empty) {
-      this.post = this.populateWith
+      this.post = { ...this.populateWith }
       this.edit = true
     }
   },
@@ -106,12 +106,12 @@ export default {
       return this.post.title === ''
     },
 
-    invalidBody() {
-      return this.post.body === ''
+    invalidContent() {
+      return this.post.content === ''
     },
 
     invalidPostAuthor() {
-      return !this.post.author
+      return !this.post.userId
     },
   },
 
@@ -121,9 +121,9 @@ export default {
       this.clearStatus()
 
       if (this.inCreationMode) {
-        this.post.author = this.$store.getters.getCurentUserId
+        this.post.userId = this.$store.getters.getCurentUserId
       }
-      if (this.invalidTitle || this.invalidBody || this.invalidPostAuthor) {
+      if (this.invalidTitle || this.invalidContent || this.invalidPostAuthor) {
         this.error = true
         return
       }
@@ -143,10 +143,10 @@ export default {
 
     clearForm() {
       this.post = {
-        author: null,
+        userId: null,
         id: null,
         title: '',
-        body: '',
+        content: '',
       }
       this.edit = false
     },
