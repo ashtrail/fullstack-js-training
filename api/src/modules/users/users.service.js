@@ -1,7 +1,7 @@
-const { Post, User } = require('../db/models')
-const CustomError = require('../CustomError')
+const { Post, User } = require('../../models')
+const CustomError = require('../../CustomError')
 const { UniqueConstraintError } = require('sequelize')
-const { NotFoundError } = require('../errors')
+const { NotFoundError } = require('../../errors')
 
 const userEagerConfig = {
   include: [

@@ -1,6 +1,6 @@
-const { Post, User } = require('../db/models')
+const { Post, User } = require('../../models')
 const _pick = require('lodash.pick')
-const { NotFoundError } = require('../errors')
+const { NotFoundError } = require('../../errors')
 
 const postEagerConfig = {
   include: [

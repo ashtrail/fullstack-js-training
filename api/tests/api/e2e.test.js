@@ -1,6 +1,6 @@
 const request = require('supertest')
-const app = require('../../index.js')
-const database = require('../../src/db/models')
+const app = require('../../app.js')
+const database = require('../../src/models')
 const factory = require('../factory')
 
 describe('API E2E Tests', () => {
