@@ -12,7 +12,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
 
     'no-use-before-define': 'error',
-    'no-unused-vars': 'error',
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     semi: ['warn', 'never'],
     quotes: ['warn', 'single', { avoidEscape: true }],
   },

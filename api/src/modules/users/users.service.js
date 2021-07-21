@@ -18,14 +18,15 @@ const userService = {
       const user = await User.create({ name })
       return this.getById(user.id)
     } catch (e) {
+      let exception = e
       if (e instanceof UniqueConstraintError) {
-        e = new CustomError(
+        exception = new CustomError(
           'DuplicateUser',
           403,
           'This username is already taken'
         )
       }
-      throw e
+      throw exception
     }
   },
 

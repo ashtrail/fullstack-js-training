@@ -38,7 +38,7 @@ describe('API E2E Tests', () => {
 
     it('should get all users', async () => {
       await factory.createMany('user', 3)
-      res = await request(app).get('/users')
+      const res = await request(app).get('/users')
       expect(res.statusCode).toEqual(200)
       expect(res.body.length).toEqual(3)
     })
@@ -131,7 +131,7 @@ describe('API E2E Tests', () => {
 
     it('should get all posts', async () => {
       await factory.createMany('post', 3)
-      res = await request(app).get('/posts')
+      const res = await request(app).get('/posts')
       expect(res.statusCode).toEqual(200)
       expect(res.body.length).toEqual(3)
     })

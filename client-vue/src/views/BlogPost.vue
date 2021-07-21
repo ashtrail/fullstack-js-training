@@ -65,7 +65,7 @@ export default {
       .then(() => {
         this.setPost(this.$store.getters.getPostById(postId))
       })
-      .catch((err) => {
+      .catch((_err) => {
         this.setPost(null)
       })
   },
