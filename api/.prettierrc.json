@@ -1,13 +1,1 @@
-{
-  "singleQuote": true,
-  "semi": false,
-  "trailingComma": "es5",
-  "overrides": [
-    {
-      "files": ["*.json", ".*.json"],
-      "options": {
-        "tabWidth": 2
-      }
-    }
-  ]
-}
+../.prettierrc.json
