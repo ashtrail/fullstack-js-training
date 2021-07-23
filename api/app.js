@@ -88,7 +88,7 @@ app.use(function (req, res) {
 app.use(errorHandler)
 
 if (process.env.NODE_ENV !== 'test') {
-  const server = app.listen(3000, function () {
+  const server = app.listen(3042, function () {
     console.log(`Server listening on ${server.address().port}`)
   })
 }

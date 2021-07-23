@@ -2,7 +2,7 @@
   <div class="columns">
     <div class="column is-two-thirds">
       <div class="content">
-        <h1 class="title">Vue Training Blog</h1>
+        <h1 class="title">Vue Blog</h1>
 
         <ul>
           <li v-for="post in posts" :key="post.id">
