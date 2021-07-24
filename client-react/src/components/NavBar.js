@@ -20,11 +20,11 @@ export default class NavBar extends Component {
 
           <div className="navbar-menu">
             <div className="navbar-start">
-              <Link className="navbar-item" to="/">
+              <Link className="navbar-item" to="/blog">
                 Blog
               </Link>
-              <Link className="navbar-item" to="/authors">
-                Authors
+              <Link className="navbar-item" to="/users">
+                Users
               </Link>
             </div>
             <div className="navbar-end">TODO: UserSelect</div>
