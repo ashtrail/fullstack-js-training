@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { BlogPostForm } from '../components'
 import http from '../http-common'
 
 export default class Blog extends Component {
@@ -9,6 +10,8 @@ export default class Blog extends Component {
     this.state = {
       posts: [],
     }
+
+    this.createPost = this.createPost.bind(this)
   }
 
   async componentDidMount() {
@@ -37,9 +40,20 @@ export default class Blog extends Component {
 
         <div className="column is-one-third">
           <h1 className="title">New Post</h1>
-          <div>TODO: BlogPostForm</div>
+          <BlogPostForm onSubmit={this.createPost} />
         </div>
       </div>
     )
+  }
+
+  createPost(post) {
+    http
+      .post('/posts', post)
+      .then(({ data }) => {
+        this.setState({ posts: [...this.state.posts, data] })
+      })
+      .catch((err) => {
+        console.log(`API error when creating new post ${post.title}:`, err)
+      })
   }
 }

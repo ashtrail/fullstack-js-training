@@ -1,2 +1,5 @@
 export { default as NavBar } from './NavBar'
 export { default as UserForm } from './UserForm'
+export { default as BlogPostForm } from './BlogPostForm'
+export { default as LoadingData } from './LoadingData'
+export { default as EntryNotFound } from './EntryNotFound'
