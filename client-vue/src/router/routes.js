@@ -1,4 +1,4 @@
-import { AuthorList, BlogPost, Blog, User } from '@/views'
+import { UserList, BlogPost, Blog, User } from '@/views'
 
 export default [
   {
@@ -17,7 +17,7 @@ export default [
     component: User,
   },
   {
-    path: '/authors',
-    component: AuthorList,
+    path: '/users',
+    component: UserList,
   },
 ]

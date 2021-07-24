@@ -5,10 +5,9 @@
         <h1 class="title">Authors</h1>
 
         <ul>
-          <li v-for="author in authors" :key="author.id">
-            <router-link :to="`/users/${author.id}`">{{
-              author.name
-            }}</router-link>
+          <li v-for="user in users" :key="user.id">
+            <router-link :to="`/users/${user.id}`">{{ user.name }}</router-link>
+            {{ authorText(user) }}
           </li>
         </ul>
       </div>
@@ -25,7 +24,7 @@
 import UserForm from '@/components/UserForm.vue'
 
 export default {
-  name: 'authors',
+  name: 'users',
 
   components: {
     UserForm,
@@ -36,14 +35,18 @@ export default {
   },
 
   computed: {
-    authors() {
-      return this.$store.getters.getAllPostAuthors
+    users() {
+      return this.$store.state.users || []
     },
   },
 
   methods: {
     createUser(user) {
       this.$store.dispatch('createUser', user)
+    },
+
+    authorText(user) {
+      return user.posts.length > 0 ? '(author)' : ''
     },
   },
 }

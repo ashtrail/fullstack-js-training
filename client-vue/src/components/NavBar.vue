@@ -17,9 +17,7 @@
       <div class="navbar-menu">
         <div class="navbar-start">
           <router-link class="navbar-item" to="/blog">Blog</router-link>
-          <router-link class="navbar-item" to="/authors">Authors</router-link>
-          <!-- <router-link class="navbar-item" to="/">Home</router-link>
-          <router-link class="navbar-item" to="/about">About</router-link> -->
+          <router-link class="navbar-item" to="/users">Users</router-link>
         </div>
         <div class="navbar-end">
           <user-select></user-select>
