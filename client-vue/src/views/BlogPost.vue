@@ -1,5 +1,7 @@
 <template>
-  <div v-if="loaded && !notFound">
+  <LoadingData v-if="!loaded" />
+  <EntryNotFound v-else-if="loaded && notFound" :type="'Post'" />
+  <div v-else>
     <div v-if="inReadMode">
       <h1 class="title">{{ post.title }}</h1>
       <h2 class="subtitle is-5">
@@ -19,9 +21,9 @@
         </button>
       </div>
     </div>
+
     <div v-else>
       <h1 class="title">Edit Post</h1>
-
       <blog-post-form
         :populateWith="post"
         @submit:post="editPost"
@@ -29,24 +31,18 @@
       />
     </div>
   </div>
-  <div v-else-if="loaded && notFound">
-    <h1 class="title">404</h1>
-    Post not found
-  </div>
-  <div v-else>
-    <p>Loading data...</p>
-    <progress class="progress is-primary" max="100">70%</progress>
-  </div>
 </template>
 
 <script>
-import BlogPostForm from '@/components/BlogPostForm.vue'
+import { BlogPostForm, EntryNotFound, LoadingData } from '@/components'
 
 export default {
   name: 'blog-post',
 
   components: {
     BlogPostForm,
+    EntryNotFound,
+    LoadingData,
   },
 
   data() {

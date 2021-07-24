@@ -1,5 +1,7 @@
 <template>
-  <div v-if="loaded && exists">
+  <LoadingData v-if="!loaded" />
+  <EntryNotFound v-else-if="loaded && !exists" :type="'User'" />
+  <div v-else>
     <div v-if="inReadMode" class="content">
       <h1 class="title">{{ user.name }}</h1>
 
@@ -17,9 +19,9 @@
         </li>
       </ul>
     </div>
+
     <div v-else>
       <h1 class="title">Edit User</h1>
-
       <user-form
         :populateWith="user"
         @submit:user="editUser"
@@ -27,24 +29,18 @@
       />
     </div>
   </div>
-  <div v-else-if="loaded && !exists">
-    <h1 class="title">404</h1>
-    User not found
-  </div>
-  <div v-else>
-    <p>Loading data...</p>
-    <progress class="progress is-primary" max="100">70%</progress>
-  </div>
 </template>
 
 <script>
-import UserForm from '@/components/UserForm.vue'
+import { UserForm, EntryNotFound, LoadingData } from '@/components'
 
 export default {
   name: 'user',
 
   components: {
     UserForm,
+    EntryNotFound,
+    LoadingData,
   },
 
   data() {
