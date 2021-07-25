@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { Link } from 'react-router-dom'
+import UserSelect from './UserSelect'
 
 export default class NavBar extends Component {
   render() {
@@ -27,7 +28,9 @@ export default class NavBar extends Component {
                 Users
               </Link>
             </div>
-            <div className="navbar-end">TODO: UserSelect</div>
+            <div className="navbar-end">
+              <UserSelect />
+            </div>
           </div>
         </div>
       </nav>
