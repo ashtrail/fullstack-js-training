@@ -1,8 +1,8 @@
-export default function EntryNotFound() {
+export default function EntryNotFound(props) {
   return (
     <div>
       <h1 className="title">404</h1>
-      {this.props.value || 'Entry'} not found
+      {props.value || 'Entry'} not found
     </div>
   )
 }
