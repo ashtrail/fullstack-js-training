@@ -1,120 +1,100 @@
-import { Component } from 'react'
+import React, { useState } from 'react'
 import http from '../http-common'
+import { useForm } from 'react-hook-form'
 
-export default class UserForm extends Component {
-  constructor(props) {
-    super(props)
+export default function UserForm(props) {
+  const { register, reset, handleSubmit } = useForm()
 
-    this.state = {
-      edit: false,
-      usernameAvailable: true,
-      username: '',
-    }
+  // Check if we are creating a new user or editing an existing one
+  const editingExistingUser = !!props.user
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.close = this.close.bind(this)
+  const currentUsernameErrorMessage = 'This is the current username'
+  const initialValidation = {
+    valid: false,
+    showHelp: editingExistingUser,
+    message: editingExistingUser ? currentUsernameErrorMessage : '',
   }
+  const [validation, setValidation] = useState(initialValidation)
 
-  componentDidMount() {
-    if (this.props.populateWith?.name) {
-      this.setState({
-        username: this.props.populateWith.name,
-        edit: true,
-        usernameAvailable: false,
-      })
-    }
-  }
-
-  canSubmit() {
-    return this.state.username !== '' && this.state.usernameAvailable
-  }
-
-  handleSubmit(event) {
-    event.preventDefault()
-    this.submit()
-  }
-
-  submit() {
-    if (this.canSubmit()) {
-      this.props.onSubmit(this.state.username)
-      this.clearForm()
-      this.close()
-    }
-  }
-
-  clearForm() {
-    this.setState({
-      username: '',
-      edit: false,
-    })
-  }
-
-  close(event) {
+  const onClose = (event) => {
     event?.preventDefault?.()
-    this.props.onClose?.()
+    props.onClose?.()
   }
 
-  handleChange(event) {
-    const value = event.target.value
-    this.setState({ username: value })
-    http
-      .get('/users/available', { params: { name: value } })
-      .then(({ data }) => {
-        this.setState({ usernameAvailable: data.available })
-      })
+  const clearForm = () => {
+    reset()
+    setValidation(initialValidation)
   }
 
-  render() {
-    let formInfo = <p></p>
-    if (this.state.username !== '') {
-      if (this.state.usernameAvailable) {
-        formInfo = <p className="help is-success">This username is available</p>
-      } else if (this.state.username === this.props.populateWith?.name) {
-        formInfo = (
-          <p className="help is-danger">This is the current username</p>
-        )
-      } else if (!this.state.usernameAvailable) {
-        formInfo = (
-          <p className="help is-danger">This username is not available</p>
-        )
-      }
+  const onSubmit = (data) => {
+    if (!validation.valid) return
+    console.log(data)
+    props.onSubmit?.(data.name)
+    clearForm()
+    onClose()
+  }
+
+  const validate = async (value) => {
+    const res = await http.get('/users/available', {
+      params: { name: value },
+    })
+    let valid = false
+    let message = ''
+    if (value === '') {
+      message = 'User name cannot be empty'
+    } else if (value === props.user?.name) {
+      message = currentUsernameErrorMessage
+    } else if (!res.data?.available) {
+      message = 'This username is not available'
+    } else {
+      message = 'This username is available'
+      valid = true
     }
-
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <div className="field">
-          <label className="label">Name</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              placeholder="John Doe"
-              value={this.state.username}
-              onChange={this.handleChange}
-            />
-          </div>
-          {formInfo}
-        </div>
-
-        <div className="buttons">
-          <button
-            className="button is-primary"
-            type="submit"
-            disabled={this.canSubmit() ? '' : false}
-          >
-            {this.state.edit ? 'Edit' : 'Create'}
-          </button>
-          {this.state.edit === true && (
-            <button
-              className="button is-danger is-outlined"
-              onClick={this.close}
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-      </form>
-    )
+    setValidation({ valid, message, showHelp: true })
   }
+
+  const helpClass = `help ${validation.valid ? 'is-success' : 'is-danger'}`
+  const helpMessage = <p className={helpClass}>{validation.message}</p>
+
+  const username = register('name')
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="field">
+        <label className="label">Name</label>
+        <div className="control">
+          <input
+            className={`input ${
+              validation.showHelp && !validation.valid ? 'is-danger' : ''
+            }`}
+            type="text"
+            placeholder="John Doe"
+            {...username}
+            onChange={(e) => {
+              username.onChange(e)
+              validate(e.target.value)
+            }}
+            defaultValue={props.user?.name}
+          />
+        </div>
+        {validation.showHelp && helpMessage}
+      </div>
+
+      <div className="buttons">
+        <button
+          className="button is-primary"
+          type="submit"
+          disabled={!validation.valid ? true : false}
+        >
+          {editingExistingUser ? 'Edit' : 'Create'}
+        </button>
+
+        {editingExistingUser && (
+          <button className="button is-danger is-outlined" onClick={onClose}>
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
+  )
 }

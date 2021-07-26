@@ -1,173 +1,92 @@
-import { Component } from 'react'
-const _pick = require('lodash.pick')
+import { useForm } from 'react-hook-form'
 
-export default class BlogPostForm extends Component {
-  constructor(props) {
-    super(props)
+export default function BlogPostForm(props) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm()
 
-    this.state = {
-      edit: false,
-      submitting: false,
-      error: false,
-      success: false,
-      post: {
-        userId: null,
-        id: null,
-        title: '',
-        content: '',
-      },
-    }
-
-    this.handleInputChange = this.handleInputChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.close = this.close.bind(this)
-  }
-
-  componentDidMount() {
-    if (this.props.populateWith) {
-      this.setState({
-        post: { ...this.props.populateWith },
-        edit: true,
-      })
-    }
-  }
-
-  clearStatus() {
-    this.setState({
-      success: false,
-      error: false,
-    })
-  }
-
-  clearForm() {
-    this.setState({
-      edit: false,
-      post: {
-        userId: null,
-        id: null,
-        title: '',
-        content: '',
-      },
-    })
-  }
-
-  handleSubmit(event) {
-    event.preventDefault()
-
-    this.setState({ submitting: true })
-    this.clearStatus()
-
-    if (!this.state.edit) {
-      // TODO: Get 'logged in' user from store
-      const post = { ...this.state.post }
-      post.userId = 1
-      this.setState({ post })
-    }
-    if (
-      !this.state.post.title ||
-      !this.state.post.content ||
-      !this.state.post.userId
-    ) {
-      this.setState({ error: true })
-      return
-    }
-
-    this.props.onSubmit(_pick(this.state.post, ['title', 'content', 'userId']))
-    this.clearForm()
-    this.setState({
-      error: false,
-      success: true,
-      submitting: false,
-    })
-    this.close()
-  }
-
-  close(event) {
+  const onClose = (event) => {
     event?.preventDefault?.()
-    this.props.onClose?.()
+    props.onClose?.()
   }
 
-  handleInputChange(event) {
-    const target = event.target
+  // Check if we are creating a new user or editing an existing one
+  const editingExistingPost = !!props.post
 
-    const post = { ...this.state.post }
-    post[target.name] = target.value
-    this.setState({
-      post,
-    })
+  const onSubmit = (data) => {
+    // TODO: Get 'logged in' user from store
+    const post = editingExistingPost ? data : { ...data, userId: 1 }
+    props.onSubmit?.(post)
+    reset()
+    onClose()
   }
 
-  render() {
-    return (
-      <form id="blog-post-form" onSubmit={this.handleSubmit}>
-        <div className="field">
-          <label className="label">Title</label>
-          <div className="control">
-            <input
-              className={`input ${
-                this.state.submitting && !this.state.post.title
-                  ? 'is-danger'
-                  : ''
-              }`}
-              type="text"
-              placeholder="Post Title"
-              name="title"
-              value={this.state.post.title}
-              onChange={this.handleInputChange}
-            />
-          </div>
-          {this.state.submitting && !this.state.post.title && (
-            <p className="help is-danger">Title cannot be empty</p>
-          )}
+  return (
+    <form id="blog-post-form" onSubmit={handleSubmit(onSubmit)}>
+      <div className="field">
+        <label className="label">Title</label>
+        <div className="control">
+          <input
+            className={`input ${errors.title ? 'is-danger' : ''}`}
+            type="text"
+            placeholder="Post Title"
+            {...register('title', {
+              required: 'Title cannot be empty',
+              minLength: {
+                value: 3,
+                message: 'Title must be at least 3 characters long',
+              },
+            })}
+            defaultValue={props.post?.title}
+          />
         </div>
-
-        <div className="field">
-          <label className="label">Content</label>
-          <div className="control">
-            <textarea
-              className={`textarea ${
-                this.state.submitting && !this.state.post.content
-                  ? 'is-danger'
-                  : ''
-              }`}
-              placeholder="Post Content"
-              name="content"
-              value={this.state.post.content}
-              onChange={this.handleInputChange}
-            ></textarea>
-          </div>
-          {this.state.submitting && !this.state.post.content && (
-            <p className="help is-danger">Content cannot be empty</p>
-          )}
-        </div>
-
-        {this.state.submitting && !this.state.error && (
-          <div className="field">
-            <p v-if="error && submitting" className="help is-danger">
-              You need to be "logged in" as a user to add a post
-            </p>
-          </div>
+        {errors.title && (
+          <p className="help is-danger">{errors.title.message}</p>
         )}
+      </div>
 
-        <div className="field is-grouped">
+      <div className="field">
+        <label className="label">Content</label>
+        <div className="control">
+          <textarea
+            className={`textarea ${errors.content ? 'is-danger' : ''}`}
+            placeholder="Post Content"
+            {...register('content', { required: true })}
+            defaultValue={props.post?.content}
+          ></textarea>
+        </div>
+        {errors.content && (
+          <p className="help is-danger">Content cannot be empty</p>
+        )}
+      </div>
+
+      {/* TODO: show error if not 'logged in' as user */}
+      {/* {this.state.submitting && !this.state.error && (
+        <div className="field">
+          <p v-if="error && submitting" className="help is-danger">
+            You need to be "logged in" as a user to add a post
+          </p>
+        </div>
+      )} */}
+
+      <div className="field is-grouped">
+        <div className="control">
+          <button type="submit" className="button is-primary">
+            {editingExistingPost ? 'Edit' : 'Create'}
+          </button>
+        </div>
+
+        {editingExistingPost && (
           <div className="control">
-            <button type="submit" className="button is-primary">
-              {this.state.edit ? 'Edit' : 'Create'}
+            <button className="button is-danger is-outlined" onClick={onClose}>
+              Cancel
             </button>
           </div>
-
-          {this.state.edit && (
-            <div className="control">
-              <button
-                className="button is-danger is-outlined"
-                onClick={this.close}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
-      </form>
-    )
-  }
+        )}
+      </div>
+    </form>
+  )
 }

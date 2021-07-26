@@ -77,7 +77,7 @@ class User extends Component {
       <div>
         <h1 className="title">Edit User</h1>
         <UserForm
-          populateWith={this.state.user}
+          user={{ ...this.state.user }}
           onSubmit={this.editUser}
           onClose={() => this.setState({ edit: false })}
         />

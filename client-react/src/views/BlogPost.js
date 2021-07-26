@@ -75,7 +75,7 @@ class BlogPost extends Component {
       <div>
         <h1 className="title">Edit Post</h1>
         <BlogPostForm
-          populateWith={this.state.post}
+          post={{ ...this.state.post }}
           onSubmit={this.editPost}
           onClose={() => this.setState({ edit: false })}
         />
