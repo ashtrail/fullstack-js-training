@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit'
 import http from '../../http-common'
 
 const initialState = {
@@ -46,6 +46,10 @@ const upsertUser = (state, user) => {
   }
 }
 
+const updateCreatedPost = createAction('posts/create/fulfilled')
+const updateUpdatedPost = createAction('posts/update/fulfilled')
+const updateDeletedPost = createAction('posts/delete/fulfilled')
+
 const usersSlice = createSlice({
   name: 'users',
   initialState,
@@ -81,6 +85,29 @@ const usersSlice = createSlice({
         const idx = state.userList.findIndex((u) => u.id === action.payload)
         if (idx !== -1) {
           state.userList.splice(idx, 1)
+        }
+      })
+
+      // Post related actions
+      .addCase(updateCreatedPost, (state, action) => {
+        const post = action.payload
+        const user = state.userList.find((u) => u.id === post.userId)
+        if (user) {
+          user.posts.push(post)
+        }
+      })
+      .addCase(updateUpdatedPost, (state, action) => {
+        const post = action.payload
+        const user = state.userList.find((u) => u.id === post.userId)
+        if (user) {
+          user.posts = user.posts.map((p) => (p.id === post.id ? post : p))
+        }
+      })
+      .addCase(updateDeletedPost, (state, action) => {
+        const { id, userId } = action.payload
+        const user = state.userList.find((u) => u.id === userId)
+        if (user) {
+          user.posts = user.posts.filter((p) => p.id !== id)
         }
       })
   },

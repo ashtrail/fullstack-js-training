@@ -1,37 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { BlogPostForm } from '../components'
-import http from '../http-common'
+import { BlogPostForm, LoadingData } from '../components'
+
+import {
+  selectPosts,
+  createPost,
+  selectStatus,
+} from '../store/posts/posts.slice'
 
 export default function Blog() {
-  const [posts, setPosts] = useState([])
+  const posts = useSelector(selectPosts)
+  const status = useSelector(selectStatus)
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await http.get('/posts')
-      setPosts(result.data)
-    }
-
-    fetchData()
-  }, [])
-
-  const createPost = (post) => {
-    http
-      .post('/posts', post)
-      .then(({ data }) => {
-        setPosts([...posts, data])
-      })
-      .catch((err) => {
-        console.log(`API error when creating new post ${post.title}:`, err)
-      })
+  let blogPosts
+  if (status === 'loading') {
+    blogPosts = <LoadingData />
+  } else {
+    blogPosts = posts.map((post) => (
+      <li key={post.id}>
+        <Link to={`/posts/${post.id}`}>{post.title}</Link> by{' '}
+        <Link to={`/users/${post.userId}`}>{post.author.name}</Link>
+      </li>
+    ))
   }
-
-  // Render
-  const blogPosts = posts.map((post) => (
-    <li key={post.id}>
-      <Link to={`/posts/${post.id}`}>{post.title}</Link> by {post.author.name}
-    </li>
-  ))
 
   return (
     <div className="columns">
@@ -45,7 +37,7 @@ export default function Blog() {
 
       <div className="column is-one-third">
         <h1 className="title">New Post</h1>
-        <BlogPostForm onSubmit={createPost} />
+        <BlogPostForm onSubmit={(post) => dispatch(createPost(post))} />
       </div>
     </div>
   )

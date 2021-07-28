@@ -5,10 +5,12 @@ import { Provider } from 'react-redux'
 import App from './App'
 import store from './store/store'
 import { fetchAllUsers } from './store/users/users.slice'
+import { fetchAllPosts } from './store/posts/posts.slice'
 import reportWebVitals from './reportWebVitals'
 
 // initial fetches
 store.dispatch(fetchAllUsers())
+store.dispatch(fetchAllPosts())
 
 ReactDOM.render(
   <React.StrictMode>
