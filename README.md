@@ -1,7 +1,7 @@
 # Fullstack JS Training
 
 A simple blog-like / forum project, inspired by the one for the [Rails tutorial](https://guides.rubyonrails.org/getting_started.html).
-Its goal is to train/refamiliarize me with popular web development frameworks in node.js. Currently, it uses an express API and a Vue.js front-end. I plan to add more along the way, starting with a version of the client in React.
+Its goal is to train/refamiliarize me with popular web development frameworks in node.js. Currently, it uses an express API and two front-ends : one in Vue.js and the other in React.
 
 ![Screenshot](Screenshot.png)
 
@@ -62,6 +62,12 @@ Having already used [Mocha](https://mochajs.org/) + [Chai](https://www.chaijs.co
 
 ### Front-End
 
+All the front-ends use [Axios](https://axios-http.com/) to make requests to the API and [Bulma](https://bulma.io/) as a CSS framework (with a custom theme from [bulmaswatch](https://jenil.github.io/bulmaswatch/)).
+
 #### Vue
 
-The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https://next.router.vuejs.org/) and [Vuex](https://next.vuex.vuejs.org/). It uses [Axios](https://axios-http.com/) to make requests to the API and [Bulma](https://bulma.io/) as a CSS framework (with a custom theme from [bulmaswatch](https://jenil.github.io/bulmaswatch/)).
+The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https://next.router.vuejs.org/) and [Vuex](https://next.vuex.vuejs.org/).
+
+#### React
+
+The React client is made with [React](https://reactjs.org/) 17, [Redux Toolkit](https://redux-toolkit.js.org/) and [React Hook Forms](https://react-hook-form.com/).
