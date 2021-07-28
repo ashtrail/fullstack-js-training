@@ -1,45 +1,35 @@
-import { Component } from 'react'
-import { Link, withRouter } from 'react-router-dom'
-import { UserForm, LoadingData, EntryNotFound } from '../components'
-import http from '../http-common'
+import { useState } from 'react'
+import { Link, useParams, useHistory } from 'react-router-dom'
+import { UserForm, EntryNotFound } from '../components'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  deleteUser,
+  selectUserById,
+  updateUser,
+} from '../store/users/users.slice'
 
-class User extends Component {
-  constructor(props) {
-    super(props)
+export default function UserList() {
+  const id = parseInt(useParams().id)
+  const user = useSelector((state) => selectUserById(state, id))
+  const [inEditMode, setEditMode] = useState(false)
+  const dispatch = useDispatch()
+  const history = useHistory()
 
-    this.state = {
-      edit: false,
-      loaded: false,
-      exists: true,
-      user: {},
-    }
-
-    this.editUser = this.editUser.bind(this)
-    this.deleteUser = this.deleteUser.bind(this)
-  }
-
-  componentDidMount() {
-    const id = this.props.match.params.id
-    http
-      .get(`/users/${id}`)
-      .then(({ data }) => {
-        this.setState({
-          user: data,
-          loaded: true,
-          exists: true,
-        })
-      })
-      .catch((err) => {
-        console.log(`fetch user with id ${id} failed, error = `, err)
-        this.setState({
-          loaded: true,
-          exists: false,
-        })
-      })
-  }
-
-  readModeRender() {
-    const posts = this.state.user.posts.map((post) => (
+  if (!user) {
+    return <EntryNotFound value={'User'} />
+  } else if (inEditMode) {
+    return (
+      <div>
+        <h1 className="title">Edit User</h1>
+        <UserForm
+          user={{ ...user }}
+          onSubmit={(updatedUser) => dispatch(updateUser({ id, updatedUser }))}
+          onClose={() => setEditMode(false)}
+        />
+      </div>
+    )
+  } else {
+    const posts = user.posts.map((post) => (
       <li key={post.id}>
         <Link to={`/posts/${post.id}`}>{post.title}</Link>
       </li>
@@ -47,20 +37,23 @@ class User extends Component {
 
     return (
       <div className="content">
-        <h1 className="title">{this.state.user.name}</h1>
+        <h1 className="title">{user.name}</h1>
 
         <div className="buttons">
-          <button
-            className="button"
-            onClick={() => {
-              this.setState({ edit: true })
-            }}
-          >
+          <button className="button" onClick={() => setEditMode(true)}>
             Edit
           </button>
           <button
             className="button is-danger is-outlined"
-            onClick={this.deleteUser}
+            onClick={() => {
+              const confirmed = window.confirm(
+                'Are you sure you want to delete this user?'
+              )
+              if (confirmed) {
+                dispatch(deleteUser(id))
+                history.push('/users')
+              }
+            }}
           >
             Delete
           </button>
@@ -71,57 +64,4 @@ class User extends Component {
       </div>
     )
   }
-
-  editModeRender() {
-    return (
-      <div>
-        <h1 className="title">Edit User</h1>
-        <UserForm
-          user={{ ...this.state.user }}
-          onSubmit={this.editUser}
-          onClose={() => this.setState({ edit: false })}
-        />
-      </div>
-    )
-  }
-
-  render() {
-    if (!this.state.loaded) {
-      return <LoadingData />
-    } else if (this.state.loaded && !this.state.exists) {
-      return <EntryNotFound value={'User'} />
-    } else if (this.state.edit) {
-      return this.editModeRender()
-    } else {
-      return this.readModeRender()
-    }
-  }
-
-  editUser(editedName) {
-    const id = this.state.user.id
-    http
-      .patch(`/users/${id}`, { name: editedName })
-      .then(({ data }) => {
-        this.setState({ user: data })
-      })
-      .catch((err) => {
-        console.log(`API error when updating user with id ${id}:`, err)
-      })
-  }
-
-  deleteUser() {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      const id = this.state.user.id
-      http
-        .delete(`/users/${this.state.user.id}`)
-        .then(() => {
-          this.props.history.push('/users')
-        })
-        .catch((err) => {
-          console.log(`API error when deleting user with id ${id}:`, err)
-        })
-    }
-  }
 }
-
-export default withRouter(User)

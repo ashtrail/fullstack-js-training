@@ -1,11 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux'
+
 import App from './App'
+import store from './store/store'
+import { fetchAllUsers } from './store/users/users.slice'
 import reportWebVitals from './reportWebVitals'
+
+// initial fetches
+store.dispatch(fetchAllUsers())
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -28,8 +28,7 @@ export default function UserForm(props) {
 
   const onSubmit = (data) => {
     if (!validation.valid) return
-    console.log(data)
-    props.onSubmit?.(data.name)
+    props.onSubmit?.({ name: data.name })
     clearForm()
     onClose()
   }
