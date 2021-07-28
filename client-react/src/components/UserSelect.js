@@ -1,58 +1,54 @@
-import { Component } from 'react'
-import http from '../http-common'
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  selectCurrentUser,
+  setCurrentUser,
+  selectUsers,
+} from '../store/users/users.slice'
 
-export default class UserSelect extends Component {
-  constructor(props) {
-    super(props)
+export default function UserSelect() {
+  const users = useSelector(selectUsers)
+  const currentUser = useSelector(selectCurrentUser)
+  const dispatch = useDispatch()
 
-    this.state = {
-      users: [],
-      currentUser: null,
-      selectValue: '',
-    }
+  const emptyOption = ''
+  const defaultSelectValue = currentUser
+    ? toString(currentUser.id)
+    : emptyOption
+  const [selectValue, editSelectValue] = useState(defaultSelectValue)
 
-    this.handleChange = this.handleChange.bind(this)
-  }
-
-  async componentDidMount() {
-    const { data } = await http.get('/users')
-    this.setState({
-      users: data,
-    })
-  }
-
-  handleChange(event) {
+  const handleChange = (event) => {
     const value = event.target.value
     const id = parseInt(value)
-    const user = this.state.users.find((u) => u.id === id)
+    const user = users.find((u) => u.id === id)
     if (user) {
-      this.setState({ currentUser: user, selectValue: value })
+      dispatch(setCurrentUser(user))
+      editSelectValue(value)
     } else {
-      this.setState({ currentUser: null, selectValue: '' })
+      dispatch(setCurrentUser(null))
+      editSelectValue(emptyOption)
     }
   }
 
-  render() {
-    // add an empty default option
-    const usersOptions = [{ id: '', name: '' }, ...this.state.users]
-    const options = usersOptions.map((user) => (
-      <option value={user.id} key={user.id}>
-        {user.name}
-      </option>
-    ))
-    return (
-      <div className="columns">
-        <div className="column">
-          <div className="navbar-item">I am :</div>
-        </div>
-        <div className="column">
-          <div className="select">
-            <select value={this.state.selectValue} onChange={this.handleChange}>
-              {options}
-            </select>
-          </div>
+  // add an empty default option
+  const usersOptions = [{ id: emptyOption, name: '' }, ...users]
+  const options = usersOptions.map((user) => (
+    <option value={user.id} key={user.id}>
+      {user.name}
+    </option>
+  ))
+  return (
+    <div className="columns">
+      <div className="column">
+        <div className="navbar-item">I am :</div>
+      </div>
+      <div className="column">
+        <div className="select">
+          <select value={selectValue} onChange={handleChange}>
+            {options}
+          </select>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
 }

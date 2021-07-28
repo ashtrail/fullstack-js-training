@@ -1,12 +1,15 @@
 import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '../store/users/users.slice'
 
 export default function BlogPostForm(props) {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-  } = useForm()
+    formState: { errors, isValid, isDirty },
+  } = useForm({ mode: 'onBlur' })
+  const currentUser = useSelector(selectCurrentUser)
 
   const onClose = (event) => {
     event?.preventDefault?.()
@@ -15,10 +18,14 @@ export default function BlogPostForm(props) {
 
   // Check if we are creating a new user or editing an existing one
   const editingExistingPost = !!props.post
+  const validUserId = !editingExistingPost ? currentUser !== null : true
+  const canSubmit = isValid && validUserId
 
   const onSubmit = (data) => {
-    // TODO: Get 'logged in' user from store
-    const post = editingExistingPost ? data : { ...data, userId: 1 }
+    if (!canSubmit) return
+    const post = editingExistingPost
+      ? data
+      : { ...data, userId: currentUser.id }
     props.onSubmit?.(post)
     reset()
     onClose()
@@ -63,18 +70,21 @@ export default function BlogPostForm(props) {
         )}
       </div>
 
-      {/* TODO: show error if not 'logged in' as user */}
-      {/* {this.state.submitting && !this.state.error && (
+      {isDirty && !validUserId && (
         <div className="field">
           <p v-if="error && submitting" className="help is-danger">
             You need to be "logged in" as a user to add a post
           </p>
         </div>
-      )} */}
+      )}
 
       <div className="field is-grouped">
         <div className="control">
-          <button type="submit" className="button is-primary">
+          <button
+            type="submit"
+            className="button is-primary"
+            disabled={canSubmit ? false : true}
+          >
             {editingExistingPost ? 'Edit' : 'Create'}
           </button>
         </div>
