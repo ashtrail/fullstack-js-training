@@ -128,10 +128,5 @@ export const selectStatus = (state) => {
 
 export const selectCurrentUser = (state) => state.users.currentUser
 
-export const findUserById = (state, userId) =>
+export const selectUserById = (state, userId) =>
   selectUsers(state).find((user) => user.id === userId)
-
-export const selectUserById = (state, userId) => {
-  const user = findUserById(state, userId)
-  return user ? { ...user, posts: user.posts.filter((p) => !!p) } : null
-}
