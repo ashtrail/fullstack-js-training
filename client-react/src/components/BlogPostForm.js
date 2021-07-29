@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../store/users/users.slice'
+import { ErrorMessage } from '@hookform/error-message'
 
 export default function BlogPostForm(props) {
   const {
@@ -16,7 +17,6 @@ export default function BlogPostForm(props) {
     props.onClose?.()
   }
 
-  // Check if we are creating a new user or editing an existing one
   const editingExistingPost = !!props.post
   const validUserId = !editingExistingPost ? currentUser !== null : true
   const canSubmit = isValid && validUserId
@@ -30,6 +30,10 @@ export default function BlogPostForm(props) {
     reset()
     onClose()
   }
+
+  const renderError = ({ message }) => (
+    <p className="help is-danger">{message}</p>
+  )
 
   return (
     <form id="blog-post-form" onSubmit={handleSubmit(onSubmit)}>
@@ -50,9 +54,7 @@ export default function BlogPostForm(props) {
             defaultValue={props.post?.title}
           />
         </div>
-        {errors.title && (
-          <p className="help is-danger">{errors.title.message}</p>
-        )}
+        <ErrorMessage errors={errors} name="title" render={renderError} />
       </div>
 
       <div className="field">
@@ -61,20 +63,18 @@ export default function BlogPostForm(props) {
           <textarea
             className={`textarea ${errors.content ? 'is-danger' : ''}`}
             placeholder="Post Content"
-            {...register('content', { required: true })}
+            {...register('content', { required: 'Content cannot be empty' })}
             defaultValue={props.post?.content}
           ></textarea>
         </div>
-        {errors.content && (
-          <p className="help is-danger">Content cannot be empty</p>
-        )}
+        <ErrorMessage errors={errors} name="content" render={renderError} />
       </div>
 
       {isDirty && !validUserId && (
         <div className="field">
-          <p v-if="error && submitting" className="help is-danger">
-            You need to be "logged in" as a user to add a post
-          </p>
+          {renderError({
+            message: 'You need to be "logged in" as a user to add a post',
+          })}
         </div>
       )}
 
