@@ -1,0 +1,28 @@
+{
+  "name": "fullstack-formation-2021",
+  "version": "1.0.0",
+  "description": "A simple blog-like / forum project, inspired by the one for the Rails tutorial. Its goal is to train/refamiliarize me with popular web development frameworks in node.js. Currently, it uses an express API and two front-ends : one in Vue.js and the other in React.",
+  "main": "",
+  "scripts": {
+    "api:db:reset": "cd api && yarn db:reset",
+    "api:reset-and-test": "cd api && yarn test",
+    "api:test": "cd api && yarn test:run",
+    "cypress:open": "cypress open",
+    "cypress:vue": "CYPRESS_BASE_URL=http://localhost:8080 yarn cypress:open",
+    "cypress:react": "CYPRESS_BASE_URL=http://localhost:3000 yarn cypress:open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashtrail/fullstack-js-training.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashtrail/fullstack-js-training/issues"
+  },
+  "homepage": "https://github.com/ashtrail/fullstack-js-training#readme",
+  "devDependencies": {
+    "cypress": "^8.0.0"
+  }
+}
