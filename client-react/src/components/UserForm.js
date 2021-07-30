@@ -36,13 +36,14 @@ export default function UserForm(props) {
   })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form data-test="user-form" onSubmit={handleSubmit(onSubmit)}>
       <div className="field">
         <label className="label">Name</label>
         <div className="control">
           <input
             className={`input ${isDirty && !isValid ? 'is-danger' : ''}`}
             type="text"
+            data-test="username-field"
             placeholder="John Doe"
             {...username}
             defaultValue={props.user?.name}

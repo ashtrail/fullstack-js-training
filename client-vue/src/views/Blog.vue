@@ -1,6 +1,6 @@
 <template>
   <div class="columns">
-    <div class="column is-two-thirds">
+    <div class="column is-two-thirds" data-test="blog">
       <div class="content">
         <h1 class="title">Vue Blog</h1>
 

@@ -36,13 +36,18 @@ export default function BlogPostForm(props) {
   )
 
   return (
-    <form id="blog-post-form" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      id="blog-post-form"
+      data-test="blog-post-form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="field">
         <label className="label">Title</label>
         <div className="control">
           <input
             className={`input ${errors.title ? 'is-danger' : ''}`}
             type="text"
+            data-test="title-field"
             placeholder="Post Title"
             {...register('title', {
               required: 'Title cannot be empty',
@@ -62,6 +67,7 @@ export default function BlogPostForm(props) {
         <div className="control">
           <textarea
             className={`textarea ${errors.content ? 'is-danger' : ''}`}
+            data-test="content-field"
             placeholder="Post Content"
             {...register('content', { required: 'Content cannot be empty' })}
             defaultValue={props.post?.content}

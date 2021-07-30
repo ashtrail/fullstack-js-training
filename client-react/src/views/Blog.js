@@ -27,7 +27,7 @@ export default function Blog() {
 
   return (
     <div className="columns">
-      <div className="column is-two-thirds">
+      <div className="column is-two-thirds" data-test="blog">
         <div className="content">
           <h1 className="title">React Blog</h1>
 

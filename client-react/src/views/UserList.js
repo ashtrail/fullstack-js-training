@@ -31,7 +31,7 @@ export default function UserList() {
         <div className="content">
           <h1 className="title">Users</h1>
 
-          <ul>{userList}</ul>
+          <ul data-test="user-list">{userList}</ul>
         </div>
       </div>
       <div className="column is-one-third">

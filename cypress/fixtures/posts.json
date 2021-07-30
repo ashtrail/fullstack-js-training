@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "title": "The Best Post",
+    "content": "It's great yo.",
+    "userId": 1,
+    "createdAt": "2021-07-29T20:51:06.152Z",
+    "updatedAt": "2021-07-29T20:51:06.152Z",
+    "author": {
+      "id": 1,
+      "name": "John",
+      "createdAt": "2021-07-29T20:51:06.141Z",
+      "updatedAt": "2021-07-29T20:51:06.141Z"
+    }
+  },
+  {
+    "id": 2,
+    "title": "The Second Best Post",
+    "content": "It's also great yo.",
+    "userId": 2,
+    "createdAt": "2021-07-29T20:51:06.152Z",
+    "updatedAt": "2021-07-29T20:51:06.152Z",
+    "author": {
+      "id": 2,
+      "name": "Jane",
+      "createdAt": "2021-07-29T20:51:06.141Z",
+      "updatedAt": "2021-07-29T20:51:06.141Z"
+    }
+  }
+]

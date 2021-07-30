@@ -64,6 +64,12 @@ Having already used [Mocha](https://mochajs.org/) + [Chai](https://www.chaijs.co
 
 All the front-ends use [Axios](https://axios-http.com/) to make requests to the API and [Bulma](https://bulma.io/) as a CSS framework (with a custom theme from [bulmaswatch](https://jenil.github.io/bulmaswatch/)).
 
+#### Tests
+
+The front-ends use the same e2e test suite thanks to the awesome [Cypress.io](https://www.cypress.io/).
+
+In order to run these you need to have the api running as well as the front you want to test. Then you have to run cypress with the correct base url env variable (i.e. `yarn cypress:react` or `yarn cypress:vue`). I'll make the front ends read their port from an env file at some point, this way restarting Cypress won't be required (although the current running front will have to be shutdown and the new one started, so there'll still be some wait time).
+
 #### Vue
 
 The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https://next.router.vuejs.org/) and [Vuex](https://next.vuex.vuejs.org/).

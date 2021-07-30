@@ -2,9 +2,9 @@
   <div class="columns">
     <div class="column is-two-thirds">
       <div class="content">
-        <h1 class="title">Authors</h1>
+        <h1 class="title">Users</h1>
 
-        <ul>
+        <ul data-test="user-list">
           <li v-for="user in users" :key="user.id">
             <router-link :to="`/users/${user.id}`">{{ user.name }}</router-link>
             {{ authorText(user) }}

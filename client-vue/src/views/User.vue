@@ -96,7 +96,7 @@ export default {
     deleteUser() {
       if (confirm('Are you sure you want to delete this user?')) {
         this.$store.dispatch('deleteUser', this.user.id).then(() => {
-          this.$router.push('/authors')
+          this.$router.push('/users')
         })
       }
     },

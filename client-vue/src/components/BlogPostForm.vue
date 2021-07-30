@@ -1,5 +1,9 @@
 <template>
-  <form id="blog-post-form" @submit.prevent="onSubmit">
+  <form
+    id="blog-post-form"
+    data-test="blog-post-form"
+    @submit.prevent="onSubmit"
+  >
     <div class="field">
       <label class="label">Title</label>
       <div class="control">
@@ -7,6 +11,7 @@
           class="input"
           :class="{ 'is-danger': submitting && invalidTitle }"
           type="text"
+          data-test="title-field"
           placeholder="Post Title"
           v-model="post.title"
         />
@@ -21,6 +26,7 @@
       <div class="control">
         <textarea
           class="textarea"
+          data-test="content-field"
           :class="{ 'is-danger': submitting && invalidContent }"
           placeholder="Post Content"
           v-model="post.content"
@@ -39,7 +45,11 @@
 
     <div class="field is-grouped">
       <div class="control">
-        <button type="submit" class="button is-primary">
+        <button
+          type="submit"
+          class="button is-primary"
+          :disabled="canSubmit ? false : true"
+        >
           {{ submitText }}
         </button>
       </div>
@@ -111,7 +121,15 @@ export default {
     },
 
     invalidPostAuthor() {
-      return !this.post.userId
+      return !this.inEditMode && !this.$store.getters.getCurentUserId
+    },
+
+    isInvalid() {
+      return this.invalidTitle || this.invalidContent || this.invalidPostAuthor
+    },
+
+    canSubmit() {
+      return !this.isInvalid
     },
   },
 
@@ -123,7 +141,7 @@ export default {
       if (this.inCreationMode) {
         this.post.userId = this.$store.getters.getCurentUserId
       }
-      if (this.invalidTitle || this.invalidContent || this.invalidPostAuthor) {
+      if (this.isInvalid) {
         this.error = true
         return
       }

@@ -1,24 +1,24 @@
 <template>
-  <form @submit.prevent="onSubmit">
+  <form data-test="user-form" @submit.prevent="onSubmit">
     <div class="field">
       <label class="label">Name</label>
       <div class="control">
         <input
           class="input"
           type="text"
+          data-test="username-field"
           placeholder="John Doe"
           v-model="username"
         />
       </div>
-      <p v-if="inputAvailable" class="help is-success">
-        This username is available
-      </p>
+      <p v-if="nameIsEmpty" class="help is-danger">User name cannot be empty</p>
       <p v-else-if="inputIsCurrentUsername" class="help is-danger">
         This is the current username
       </p>
-      <p v-else-if="inputNotAvailable" class="help is-danger">
+      <p v-else-if="!usernameAvailable" class="help is-danger">
         This username is not available
       </p>
+      <p v-else class="help is-success">This username is available</p>
     </div>
 
     <div class="buttons">
@@ -84,28 +84,16 @@ export default {
       return this.inCreationMode ? 'Create' : 'Edit'
     },
 
-    nameIsNotEmpty() {
-      return this.user.name != ''
+    nameIsEmpty() {
+      return this.user.name === ''
     },
 
     canSubmit() {
-      return this.nameIsNotEmpty && this.usernameAvailable
-    },
-
-    inputAvailable() {
-      return this.nameIsNotEmpty && this.usernameAvailable
-    },
-
-    inputNotAvailable() {
-      return this.nameIsNotEmpty && !this.usernameAvailable
+      return !this.nameIsEmpty && this.usernameAvailable
     },
 
     inputIsCurrentUsername() {
-      return (
-        this.nameIsNotEmpty &&
-        !this.usernameAvailable &&
-        this.user.name == this.populateWith.name
-      )
+      return this.user.name === this.populateWith['name']
     },
 
     username: {
