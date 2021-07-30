@@ -4,9 +4,11 @@
       <div class="navbar-brand">
         <a
           role="button"
-          class="navbar-burger"
+          class="navbar-burger burger"
+          :class="{ 'is-active': isActive }"
           aria-label="menu"
           aria-expanded="false"
+          @click="toggleActive"
         >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -14,7 +16,7 @@
         </a>
       </div>
 
-      <div class="navbar-menu">
+      <div class="navbar-menu" :class="{ 'is-active': isActive }">
         <div class="navbar-start">
           <router-link class="navbar-item" to="/blog">Blog</router-link>
           <router-link class="navbar-item" to="/users">Users</router-link>
@@ -34,6 +36,18 @@ export default {
 
   components: {
     UserSelect,
+  },
+
+  data() {
+    return {
+      isActive: false,
+    }
+  },
+
+  methods: {
+    toggleActive() {
+      this.isActive = !this.isActive
+    },
   },
 }
 </script>

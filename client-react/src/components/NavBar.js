@@ -1,39 +1,43 @@
-import { Component } from 'react'
+// import { Component } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import UserSelect from './UserSelect'
 
-export default class NavBar extends Component {
-  render() {
-    return (
-      <nav className="navbar" role="navigation" aria-label="main navigation">
-        <div className="container">
-          <div className="navbar-brand">
-            <button
-              className="navbar-burger"
-              aria-label="menu"
-              aria-expanded="false"
-            >
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-            </button>
-          </div>
+export default function NavBar() {
+  const [isActive, setisActive] = useState(false)
 
-          <div className="navbar-menu">
-            <div className="navbar-start">
-              <Link className="navbar-item" to="/blog">
-                Blog
-              </Link>
-              <Link className="navbar-item" to="/users">
-                Users
-              </Link>
-            </div>
-            <div className="navbar-end">
-              <UserSelect />
-            </div>
+  return (
+    <nav className="navbar" role="navigation" aria-label="main navigation">
+      <div className="container">
+        <div className="navbar-brand">
+          <button
+            className={`navbar-burger burger ${isActive ? 'is-active' : ''}`}
+            aria-label="menu"
+            aria-expanded="false"
+            onClick={() => {
+              setisActive(!isActive)
+            }}
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div className={`navbar-menu ${isActive ? 'is-active' : ''}`}>
+          <div className="navbar-start">
+            <Link className="navbar-item" to="/blog">
+              Blog
+            </Link>
+            <Link className="navbar-item" to="/users">
+              Users
+            </Link>
+          </div>
+          <div className="navbar-end">
+            <UserSelect />
           </div>
         </div>
-      </nav>
-    )
-  }
+      </div>
+    </nav>
+  )
 }
