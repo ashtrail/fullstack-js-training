@@ -100,7 +100,7 @@ export default {
             userId: this.post.userId,
           })
           .then(() => {
-            this.$router.push('/blog')
+            this.$router.push('/posts')
           })
       }
     },

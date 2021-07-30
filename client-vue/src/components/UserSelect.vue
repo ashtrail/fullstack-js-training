@@ -1,5 +1,5 @@
 <template>
-  <div class="columns">
+  <div data-test="user-select" class="columns">
     <div class="column">
       <div class="navbar-item">I am :</div>
     </div>

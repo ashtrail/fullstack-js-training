@@ -38,7 +38,7 @@ export default function UserSelect() {
     </option>
   ))
   return (
-    <div className="columns">
+    <div data-test="user-select" className="columns">
       <div className="column">
         <div className="navbar-item">I am :</div>
       </div>
