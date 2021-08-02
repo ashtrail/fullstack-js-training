@@ -3,6 +3,7 @@
   "viewportWidth": 1000,
   "viewportHeight": 660,
   "env": {
-    "mobileViewportWidthBreakpoint": 1024
+    "mobileViewportWidthBreakpoint": 1024,
+    "apiUrl": "http://localhost:3042/"
   }
 }
