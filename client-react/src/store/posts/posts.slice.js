@@ -49,6 +49,7 @@ const upsertPost = (state, post) => {
 }
 
 const deletePostsOnCascade = createAction('users/delete/fulfilled')
+const updateUpdatedAuthor = createAction('users/update/fulfilled')
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -90,6 +91,17 @@ const postsSlice = createSlice({
       })
 
       // User related actions
+      .addCase(updateUpdatedAuthor, (state, action) => {
+        const author = action.payload
+        state.postList = state.postList.map((post) =>
+          post.userId === author.id
+            ? {
+                ...post,
+                author,
+              }
+            : post
+        )
+      })
       .addCase(deletePostsOnCascade, (state, action) => {
         const userId = action.payload
         state.postList = state.postList.filter((p) => p.userId !== userId)
