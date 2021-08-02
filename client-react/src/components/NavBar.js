@@ -26,10 +26,10 @@ export default function NavBar() {
 
         <div className={`navbar-menu ${isActive ? 'is-active' : ''}`}>
           <div className="navbar-start">
-            <Link className="navbar-item" to="/blog">
+            <Link className="navbar-item" data-test="navlink-blog" to="/blog">
               Blog
             </Link>
-            <Link className="navbar-item" to="/users">
+            <Link className="navbar-item" data-test="navlink-users" to="/users">
               Users
             </Link>
           </div>

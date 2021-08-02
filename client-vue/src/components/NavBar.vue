@@ -18,8 +18,12 @@
 
       <div class="navbar-menu" :class="{ 'is-active': isActive }">
         <div class="navbar-start">
-          <router-link class="navbar-item" to="/blog">Blog</router-link>
-          <router-link class="navbar-item" to="/users">Users</router-link>
+          <router-link class="navbar-item" data-test="navlink-blog" to="/blog"
+            >Blog</router-link
+          >
+          <router-link class="navbar-item" data-test="navlink-users" to="/users"
+            >Users</router-link
+          >
         </div>
         <div class="navbar-end">
           <user-select></user-select>
