@@ -70,9 +70,7 @@ describe('Users', () => {
     cy.get('@user').click()
     cy.get('.button').contains('Edit').click()
     cy.get('@name-input').should('have.value', userName)
-
-    // TODO: check proper form clean up
-    // cy.get('.help.is-danger').should('not.exist')
+    cy.get('.help.is-danger').should('not.exist')
 
     // Dirty the field to get the error message to appear
     cy.get('@name-input').type(' ').type('{backspace}')
@@ -106,7 +104,7 @@ describe('Users', () => {
     }).as('editUser')
     cy.intercept('GET', `/users/${user.id}`, {
       statusCode: 200,
-      body: editedUser,
+      body: user,
     })
     cy.intercept('DELETE', '/users/*', {
       statusCode: 204,
@@ -122,8 +120,7 @@ describe('Users', () => {
     cy.wait('@createUser')
     // Form should have been cleaned up
     cy.get('@name-input').should('contain.text', '')
-    // TODO: check proper form clean up
-    // cy.get('.help').should('not.exist')
+    cy.get('.help').should('not.exist')
     cy.get('@submit').should('be.disabled')
     // New user should appear in user list
     cy.getBySel('user-list')
@@ -137,13 +134,17 @@ describe('Users', () => {
     cy.get('.button').contains('Edit').click()
     cy.get('@name-input').clear().type(editedName)
     cy.get('@submit').click()
-    cy.wait('@editUser')
-    // Should be back to read mode
-    cy.get('h1.title').should('have.text', editedName)
+    cy.intercept('GET', `/users/${user.id}`, {
+      statusCode: 200,
+      body: editedUser,
+    })
     cy.intercept('GET', getApiUrl('/users'), {
       statusCode: 200,
       body: [...this.usersFixture, editedUser],
     })
+    cy.wait('@editUser')
+    // Should be back to read mode
+    cy.get('h1.title').should('have.text', editedName)
     // Should be in users list
     cy.go('back')
     cy.getBySel('user-list')

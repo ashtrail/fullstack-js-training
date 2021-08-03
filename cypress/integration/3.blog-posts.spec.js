@@ -1,12 +1,6 @@
 /// <reference types="cypress" />
 import { isMobile, getApiUrl } from '../support/utils'
 
-// TODO: Add proper form validation to Vue client
-// const errorMessages = {
-//   notLoggedIn: 'You need to be "logged in" as a user to add a post',
-//   empty: (name) => `${name} cannot be empty`,
-// }
-
 describe('Blog Posts', () => {
   beforeEach(() => {
     cy.intercept('GET', getApiUrl('/users'), {
@@ -63,6 +57,10 @@ describe('Blog Posts', () => {
   })
 
   it('should have proper form validation', function () {
+    const errorMessages = {
+      notLoggedIn: 'You need to be "logged in" as a user to add a post',
+      empty: (name) => `${name} cannot be empty`,
+    }
     const userName = this.postsFixture[0].author.name
 
     // Form should be disabled by default
@@ -72,25 +70,25 @@ describe('Blog Posts', () => {
     // Dirty the fields to get error messages to appear
     cy.get('@title-input').type(' ').type('{backspace}').blur()
 
-    // cy.get('.help.is-danger')
-    //   .contains(errorMessages.empty('Title'))
-    //   .should('exist')
+    cy.get('.help.is-danger')
+      .contains(errorMessages.empty('Title'))
+      .should('exist')
     cy.get('@content-input').type(' ').type('{backspace}').blur()
-    // cy.get('.help.is-danger')
-    //   .contains(errorMessages.empty('Content'))
-    //   .should('exist')
+    cy.get('.help.is-danger')
+      .contains(errorMessages.empty('Content'))
+      .should('exist')
 
     // Current user must be selected
-    // cy.get('.help.is-danger')
-    //   .contains(errorMessages.notLoggedIn)
-    //   .should('exist')
+    cy.get('.help.is-danger')
+      .contains(errorMessages.notLoggedIn)
+      .should('exist')
     if (isMobile()) {
       cy.get('.navbar-burger').click()
     }
     cy.get('@user-select').select(userName)
-    // cy.get('.help.is-danger')
-    //   .contains(errorMessages.notLoggedIn)
-    //   .should('not.exist')
+    cy.get('.help.is-danger')
+      .contains(errorMessages.notLoggedIn)
+      .should('not.exist')
 
     // Type valid content
     cy.get('@title-input').type('A valid post').blur()
@@ -117,7 +115,7 @@ describe('Blog Posts', () => {
     }).as('editPost')
     cy.intercept('GET', `/posts/${post.id}`, {
       statusCode: 200,
-      body: editedPost,
+      body: post,
     })
     cy.intercept('DELETE', '/posts/*', {
       statusCode: 204,
@@ -150,13 +148,17 @@ describe('Blog Posts', () => {
     cy.get('.button').contains('Edit').click()
     cy.get('@title-input').clear().type(editedTitle)
     cy.get('@submit').click()
-    cy.wait('@editPost')
-    // Should be back to read mode
-    cy.get('h1.title').should('have.text', editedTitle)
+    cy.intercept('GET', `/posts/${post.id}`, {
+      statusCode: 200,
+      body: editedPost,
+    })
     cy.intercept('GET', getApiUrl('/posts'), {
       statusCode: 200,
       body: [...this.postsFixture, editedPost],
     })
+    cy.wait('@editPost')
+    // Should be back to read mode
+    cy.get('h1.title').should('have.text', editedTitle)
     // Should be in post list
     cy.go('back')
     cy.getBySel('blog')

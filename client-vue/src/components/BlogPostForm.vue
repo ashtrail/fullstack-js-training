@@ -1,44 +1,61 @@
 <template>
-  <form
+  <Form
     id="blog-post-form"
     data-test="blog-post-form"
-    @submit.prevent="onSubmit"
+    v-slot="{ meta }"
+    @submit="onSubmit"
   >
-    <div class="field">
-      <label class="label">Title</label>
-      <div class="control">
-        <input
-          class="input"
-          :class="{ 'is-danger': submitting && invalidTitle }"
-          type="text"
-          data-test="title-field"
-          placeholder="Post Title"
-          v-model="post.title"
-        />
+    <Field
+      name="title"
+      v-model="post.title"
+      :rules="titleIsValid"
+      :validateOnChange="false"
+      v-slot="{ field, meta }"
+    >
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input
+            v-bind="field"
+            class="input"
+            :class="{ 'is-danger': meta.touched && !meta.valid }"
+            type="text"
+            data-test="title-field"
+            placeholder="Post Title"
+          />
+        </div>
+        <ErrorMessage name="title" v-slot="{ message }">
+          <p class="help is-danger">{{ message }}</p>
+        </ErrorMessage>
       </div>
-      <p v-if="submitting && invalidTitle" class="help is-danger">
-        Title cannot be empty
-      </p>
-    </div>
+    </Field>
+
+    <Field
+      name="content"
+      v-model="post.content"
+      :rules="contentIsValid"
+      :validateOnChange="false"
+      v-slot="{ field, meta }"
+    >
+      <div class="field">
+        <label class="label">Content</label>
+        <div class="control">
+          <textarea
+            v-bind="field"
+            class="textarea"
+            :class="{ 'is-danger': meta.touched && !meta.valid }"
+            data-test="content-field"
+            placeholder="Post Content"
+          ></textarea>
+        </div>
+        <ErrorMessage name="content" v-slot="{ message }">
+          <p class="help is-danger">{{ message }}</p>
+        </ErrorMessage>
+      </div>
+    </Field>
 
     <div class="field">
-      <label class="label">Content</label>
-      <div class="control">
-        <textarea
-          class="textarea"
-          data-test="content-field"
-          :class="{ 'is-danger': submitting && invalidContent }"
-          placeholder="Post Content"
-          v-model="post.content"
-        ></textarea>
-      </div>
-      <p v-if="submitting && invalidContent" class="help is-danger">
-        Content cannot be empty
-      </p>
-    </div>
-
-    <div class="field">
-      <p v-if="error && submitting" class="help is-danger">
+      <p v-if="meta.touched && invalidPostAuthor" class="help is-danger">
         You need to be "logged in" as a user to add a post
       </p>
     </div>
@@ -48,7 +65,9 @@
         <button
           type="submit"
           class="button is-primary"
-          :disabled="canSubmit ? false : true"
+          :disabled="
+            meta.dirty && meta.valid && !invalidPostAuthor ? false : true
+          "
         >
           {{ submitText }}
         </button>
@@ -56,7 +75,7 @@
 
       <div class="control">
         <button
-          v-if="inEditMode"
+          v-if="editingExistingPost"
           class="button is-danger is-outlined"
           @click="close"
         >
@@ -64,12 +83,20 @@
         </button>
       </div>
     </div>
-  </form>
+  </Form>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { Form, Field, ErrorMessage } from 'vee-validate'
+
 export default {
   name: 'blog-post-form',
+  components: {
+    Form,
+    Field,
+    ErrorMessage,
+  },
   props: {
     populateWith: {
       type: Object,
@@ -79,10 +106,7 @@ export default {
 
   data() {
     return {
-      edit: false,
-      submitting: false,
-      error: false,
-      success: false,
+      editingExistingPost: false,
       post: {
         userId: null,
         id: null,
@@ -95,68 +119,47 @@ export default {
   created() {
     if (!this.populateWith.empty) {
       this.post = { ...this.populateWith }
-      this.edit = true
+      this.editingExistingPost = true
     }
   },
 
   computed: {
-    inCreationMode() {
-      return !this.edit
-    },
-
-    inEditMode() {
-      return this.edit
-    },
+    ...mapGetters(['getCurentUserId']),
 
     submitText() {
-      return this.inCreationMode ? 'Create' : 'Edit'
-    },
-
-    invalidTitle() {
-      return this.post.title === ''
-    },
-
-    invalidContent() {
-      return this.post.content === ''
+      return this.editingExistingPost ? 'Edit' : 'Create'
     },
 
     invalidPostAuthor() {
-      return !this.inEditMode && !this.$store.getters.getCurentUserId
-    },
-
-    isInvalid() {
-      return this.invalidTitle || this.invalidContent || this.invalidPostAuthor
-    },
-
-    canSubmit() {
-      return !this.isInvalid
+      return !this.editingExistingPost && !this.getCurentUserId
     },
   },
 
   methods: {
-    onSubmit() {
-      this.submitting = true
-      this.clearStatus()
-
-      if (this.inCreationMode) {
-        this.post.userId = this.$store.getters.getCurentUserId
+    titleIsValid(value) {
+      if (value === '') {
+        return 'Title cannot be empty'
       }
-      if (this.isInvalid) {
-        this.error = true
-        return
+      if (!!value && value.length < 3) {
+        return 'Title must be at least 3 characters long'
       }
-
-      this.$emit('submit:post', this.post)
-      this.clearForm()
-      this.error = false
-      this.success = true
-      this.submitting = false
-      this.close()
+      return true
     },
 
-    clearStatus() {
-      this.success = false
-      this.error = false
+    contentIsValid(value) {
+      if (value === '') return 'Content cannot be empty'
+      return true
+    },
+
+    onSubmit(_values, { resetForm }) {
+      const post = this.editingExistingPost
+        ? { ...this.post }
+        : { ...this.post, userId: this.getCurentUserId }
+
+      this.$emit('submit:post', post)
+      this.clearForm()
+      resetForm()
+      this.close()
     },
 
     clearForm() {
@@ -166,7 +169,7 @@ export default {
         title: '',
         content: '',
       }
-      this.edit = false
+      this.editingExistingPost = false
     },
 
     close() {

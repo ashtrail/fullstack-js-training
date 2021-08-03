@@ -72,8 +72,8 @@ In order to run these you need to have the api running as well as the front you 
 
 #### Vue
 
-The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https://next.router.vuejs.org/) and [Vuex](https://next.vuex.vuejs.org/).
+The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https://next.router.vuejs.org/), [Vuex](https://next.vuex.vuejs.org/) and [VeeValidate](https://vee-validate.logaretm.com/v4/).
 
 #### React
 
-The React client is made with [React](https://reactjs.org/) 17, [Redux Toolkit](https://redux-toolkit.js.org/) and [React Hook Forms](https://react-hook-form.com/).
+The React client is made with [React](https://reactjs.org/) 17, [React Router Dom](https://www.npmjs.com/package/react-router-dom), [Redux Toolkit](https://redux-toolkit.js.org/) and [React Hook Forms](https://react-hook-form.com/).
