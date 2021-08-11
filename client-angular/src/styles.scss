@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+
+$container-max-width: 1152px;
+@import '../node_modules/bulmaswatch/lumen/_variables';
+@import '~bulma';
+@import '../node_modules/bulmaswatch/lumen/_overrides';
+
+body {
+  margin: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
