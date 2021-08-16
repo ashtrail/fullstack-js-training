@@ -1,8 +1,4 @@
 import axios from 'axios'
+import axiosConf from '../../axios-conf'
 
-export default axios.create({
-  baseURL: 'http://localhost:3042/',
-  headers: {
-    'Content-type': 'application/json',
-  },
-})
+export default axios.create(axiosConf)
