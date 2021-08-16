@@ -1,0 +1,20 @@
+<div class="columns">
+  <div class="column is-two-thirds">
+    <div class="content">
+      <h1 class="title">Users</h1>
+
+      <ul data-test="user-list">
+        <li *ngFor="let user of users">
+          <a routerLink="`/users/${user.id}`">{{ user.name }}</a>
+          {{ authorText(user) }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="column is-one-third">
+    <h1 class="title">New User</h1>
+
+    <p>TODO: UserForm</p>
+    <!-- <user-form @submit:user="createUser" /> -->
+  </div>
+</div>

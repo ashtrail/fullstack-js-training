@@ -4,7 +4,7 @@
       <a
         role="button"
         class="navbar-burger burger"
-        [ngClass]="{'is-active' : isActive}"
+        [class.is-active]="isActive"
         aria-label="menu"
         aria-expanded="false"
         (click)="toggleActive()"
@@ -15,7 +15,7 @@
       </a>
     </div>
 
-    <div class="navbar-menu" [ngClass]="{'is-active' : isActive}">
+    <div class="navbar-menu" [class.is-active]="isActive">
       <div class="navbar-start">
         <a class="navbar-item" data-test="navlink-blog" routerLink="/blog"
           >Blog</a
