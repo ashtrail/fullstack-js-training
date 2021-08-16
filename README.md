@@ -77,3 +77,7 @@ The Vue client is made with [Vue 3](https://v3.vuejs.org/), [Vue Router](https:/
 #### React
 
 The React client is made with [React](https://reactjs.org/) 17, [React Router Dom](https://www.npmjs.com/package/react-router-dom), [Redux Toolkit](https://redux-toolkit.js.org/) and [React Hook Forms](https://react-hook-form.com/).
+
+#### Angular
+
+The Angular client is made with [Angular](https://angular.io/) 12. Unfortunately Angular 12 doesn't support Node v16 for the moment, so the `client-angular` directory uses Node v14.17 thanks to nvm instead.
