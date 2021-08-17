@@ -1,0 +1,38 @@
+<form data-test="user-form" (ngSubmit)="onSubmit()">
+  <div class="field">
+    <label class="label">Name</label>
+    <div class="control">
+      <input
+        class="input"
+        type="text"
+        name="username"
+        data-test="username-field"
+        placeholder="John Doe"
+        [class.is-danger]="username.dirty && username.invalid"
+        [formControl]="username"
+        />
+
+    </div>
+    <div *ngIf="username.dirty">
+      <p *ngIf="username.errors?.required" class="help is-danger">User name cannot be empty</p>
+      <p *ngIf="username.errors?.currentUsername" class="help is-danger">This is the current username</p>
+      <p *ngIf="username.errors?.unavailable" class="help is-danger">This username is not available</p>
+
+      <p *ngIf="username.valid" class="help is-success">This username is available</p>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button
+      class="button is-primary"
+      type="submit"
+      [disabled]="!username.valid"
+    >
+    {{ submitText() }}
+    </button>
+
+    <button *ngIf="editingExistingUser" class="button is-danger is-outlined" (click)="close()">
+      Cancel
+    </button>
+  </div>
+</form>

@@ -8,8 +8,19 @@ import { User } from './user'
 export class UsersService {
   constructor() {}
 
+  async createUser({ name }: User): Promise<void> {
+    await http.post('/users', { name })
+  }
+
   async getUsers(): Promise<User[]> {
     const res = await http.get('/users')
     return res.data
+  }
+
+  async getAvailabilty(name: string): Promise<boolean> {
+    const res = await http.get('/users/available', {
+      params: { name },
+    })
+    return res.data.available
   }
 }

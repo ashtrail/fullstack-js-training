@@ -9,16 +9,22 @@ import { UsersService } from '../users.service'
 export class UserListComponent implements OnInit {
   users: Array<User> = []
 
-  constructor(private heroService: UsersService) {}
+  constructor(private userService: UsersService) {}
 
   ngOnInit(): void {
-    this.heroService.getUsers().then((users) => {
+    this.userService.getUsers().then((users) => {
       this.users = users
-      console.log('users = ', this.users)
     })
   }
 
   authorText(user: User): string {
     return user.posts && user.posts.length > 0 ? '(author)' : ''
+  }
+
+  createUser(newUser: User): void {
+    this.userService.createUser(newUser)
+    this.userService.getUsers().then((users) => {
+      this.users = users
+    })
   }
 }

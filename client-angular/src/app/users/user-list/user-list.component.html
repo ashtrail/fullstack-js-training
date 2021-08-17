@@ -14,7 +14,6 @@
   <div class="column is-one-third">
     <h1 class="title">New User</h1>
 
-    <p>TODO: UserForm</p>
-    <!-- <user-form @submit:user="createUser" /> -->
+    <user-form (submitEvent)="createUser($event)"></user-form>
   </div>
 </div>
