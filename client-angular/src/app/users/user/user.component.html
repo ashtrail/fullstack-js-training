@@ -1,0 +1,30 @@
+<loading-data *ngIf="!loaded"></loading-data>
+<entry-not-found *ngIf="loaded && !exists" :type="User"></entry-not-found>
+<div *ngIf="loaded && exists">
+  <div *ngIf="!inEditMode" class="content">
+    <h1 class="title">{{ user.name }}</h1>
+
+    <div class="buttons">
+      <button class="button" (click)="setEditMode(true)">Edit</button>
+      <button class="button is-danger is-outlined" (click)="deleteUser()">
+        Delete
+      </button>
+    </div>
+
+    <h2 class="subtitle is-4">Posts</h2>
+    <ul>
+      <li *ngFor="let post of user.posts">
+        <a [routerLink]="['/posts/', post.id]">{{ post.title }}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="inEditMode">
+    <h1 class="title">Edit User</h1>
+    <user-form
+      [populateWith]="user"
+      (submitEvent)="editUser($event)"
+      (closeEvent)="setEditMode(false)">
+    </user-form>
+  </div>
+</div>

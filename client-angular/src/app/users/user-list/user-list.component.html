@@ -5,7 +5,7 @@
 
       <ul data-test="user-list">
         <li *ngFor="let user of users">
-          <a routerLink="`/users/${user.id}`">{{ user.name }}</a>
+          <a [routerLink]="['/users/', user.id]">{{ user.name }}</a>
           {{ authorText(user) }}
         </li>
       </ul>
