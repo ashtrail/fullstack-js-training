@@ -1,0 +1,21 @@
+<div class="columns">
+  <div class="column is-two-thirds" data-test="blog">
+    <div class="content">
+      <h1 class="title">Angular Blog</h1>
+
+      <ul>
+        <li *ngFor="let post of posts">
+          <a [routerLink]="['/posts/', post.id]">{{ post.title }}</a>
+          by
+          <a [routerLink]="['/users/', post.author.id]">{{ post.author.name }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="column is-one-third">
+    <h1 class="title">New Post</h1>
+    TODO: BlogPostForm
+    <!-- <blog-post-form (submitEvent)="createPost($event)" /> -->
+  </div>
+</div>
