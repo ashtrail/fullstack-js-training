@@ -22,7 +22,7 @@ export class UserFormComponent implements OnInit {
   @Output() submitEvent = new EventEmitter<User>()
 
   username = new FormControl('', {
-    validators: [Validators.required, this.differentUsername],
+    validators: [Validators.required, this.differentUsername()],
     asyncValidators: this.availableUsername(),
     updateOn: 'change',
   })

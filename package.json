@@ -9,7 +9,8 @@
     "api:test": "cd api && yarn test:run",
     "cypress:open": "cypress open",
     "cypress:vue": "CYPRESS_BASE_URL=http://localhost:8080/# yarn cypress:open",
-    "cypress:react": "CYPRESS_BASE_URL=http://localhost:3000 yarn cypress:open"
+    "cypress:react": "CYPRESS_BASE_URL=http://localhost:3000 yarn cypress:open",
+    "cypress:angular": "CYPRESS_BASE_URL=http://localhost:4200 yarn cypress:open"
   },
   "repository": {
     "type": "git",
